@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+  server:
+    container_name: ${BACKEND_CONTAINER_NAME}
+    build: ./app
+    tty: true
+    depends_on:
+      - db
+    volumes: # ローカルとコンテナのパスをマウント
+      - ./app:/app
+      - /etc/localtime:/etc/localtime:ro # タイムゾーンを日本時刻に設定
+    working_dir: /app
+    environment:
+      TZ: Asia/Tokyo # タイムゾーンを日本時刻に設定
+    # command: sh -c 'yarn && yarn start:dev '
+    ports:
+      - ${BACKEND_PORT}:3000
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+  db:
+    container_name: ${MYSQL_HOST}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - "TZ=Asia/Tokyo" # タイムゾーンを日本時刻に設定
+    image: mysql:8.0
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    ports:
+      - ${MYSQL_PORT}:3306
+
+volumes:
+  mysql_data:
