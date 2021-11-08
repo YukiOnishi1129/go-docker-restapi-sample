@@ -1,3 +1,5 @@
-module github.com/YukiOnishi1129/go-docker-restapi-sample
+module myapp
 
 go 1.17
+
+require github.com/gorilla/mux v1.8.0 // indirect
