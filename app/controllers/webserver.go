@@ -41,6 +41,8 @@ func rootPage(w http.ResponseWriter, r *http.Request) {
 */
 func fetchAllItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
+    //json.NewEncoder()
+    // Go言語のデータ型からjsonに変換する
 	json.NewEncoder(w).Encode(items)
 }
 
@@ -49,6 +51,7 @@ func fetchAllItems(w http.ResponseWriter, r *http.Request) {
 */
 func fetchSingleItem(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-type", "application/json")
+    // mux.Vars(): パスパラメータの取得
     vars := mux.Vars(r)
     key := vars["id"] // getパラメーターを取得
 
@@ -63,8 +66,12 @@ func fetchSingleItem(w http.ResponseWriter, r *http.Request) {
 * 新規作成
 */
 func createItem(w http.ResponseWriter, r *http.Request) {
+    // ioutil: ioに特化したパッケージ
     reqBody,_ := ioutil.ReadAll(r.Body)
     var item ItemParams
+    // json.Unmarshal()
+    // 第１引数で与えたjsonデータを、第二引数に指定した値にマッピングする
+    // 返り値はerrorで、エラーが発生しない場合はnilになる
     if err := json.Unmarshal(reqBody, &item); err != nil {
         log.Fatal(err)
     }
