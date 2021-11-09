@@ -2,20 +2,10 @@ package models
 
 import (
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
-type Model struct {
-	gorm.Model
-	ID        uint        `gorm:"primary_key" json:"id"`
-    CreatedAt *time.Time  `json:"created_at"`
-    UpdatedAt *time.Time  `json:"updated_at"`
-    DeletedAt *time.Time  `json:"deleted_at"`
-}
-
 type Item struct {
-    Model
+    BaseModel
     JanCode      string     `gorm:"size:255" json:"jan_code,omitempty"`
     ItemName     string     `gorm:"size:255" json:"item_name,omitempty"`
     Price        int        `json:"price,omitempty"`

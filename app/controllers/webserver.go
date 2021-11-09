@@ -11,6 +11,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type DeleteResponse struct {
+    Id string `json:"id"`
+}
+
 type ItemParams struct {
     Id           string    `json:"id"`
     JanCode      string    `json:"jan_code,omitempty"`
@@ -43,7 +47,7 @@ func fetchAllItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
     //json.NewEncoder()
     // Go言語のデータ型からjsonに変換する
-	json.NewEncoder(w).Encode(items)
+	// json.NewEncoder(w).Encode(items)
 }
 
 /*
@@ -135,6 +139,9 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 func StartWebServer() error {
     fmt.Println("Rest API with Mux Routers")
     router := mux.NewRouter().StrictSlash(true)
+
+    // DB接続開始
+	// const dbConn := db.OpenConnection()
 
     // router.HandleFunc({ エンドポイント }, { レスポンス関数 }).Methods({ リクエストメソッド（複数可能） })
     router.HandleFunc("/", rootPage)
