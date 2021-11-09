@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"myapp/databases"
+	"myapp/db"
 	"myapp/models"
 
 	"gorm.io/gorm"
@@ -28,12 +28,12 @@ func seeds(db *gorm.DB) error {
 
 
 func main() {
-	db := databases.OpenConnection()
+	db.Init()
+	dbCon := db.GetDB()
 	// dBを閉じる
-	DB, _ := db.DB()
-	defer DB.Close()
+	defer db.CloseDB()
 
-	if err := seeds(db); err != nil {
+	if err := seeds(dbCon); err != nil {
 		fmt.Printf("%+v", err)
         return
 	}
