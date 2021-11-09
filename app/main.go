@@ -2,7 +2,6 @@ package main
 
 import (
 	"myapp/controllers"
-	"myapp/db"
 )
 
 // func handler(writer http.ResponseWriter, _ *http.Request) {
@@ -13,6 +12,8 @@ func main() {
 	// http.HandleFunc("/", handler)
 	// http.ListenAndServe(":3000", nil)
 	// godotenv.Load(".env")
-	db.Migrate()
+	// db.Migrate()
+
+	// API起動
 	controllers.StartWebServer()
 }
