@@ -1,23 +1,23 @@
 package main
 
 import (
-	"myapp/db"
+	"myapp/databases"
 	"myapp/models"
 
 	"gorm.io/gorm"
 )
 
-func migrate(dbConn *gorm.DB) {
+func migrate(db *gorm.DB) {
 	// Migration実行
-	dbConn.AutoMigrate(&models.Item{})
+	db.AutoMigrate(&models.Item{})
 }
 
 func main() {
-	dbConn := db.OpenConnection()
+	db := databases.OpenConnection()
 	// dBを閉じる
-	DB, _ := dbConn.DB()
+	DB, _ := db.DB()
 	defer DB.Close()
 
 	// migration実行
-	migrate(dbConn)
+	migrate(db)
 }

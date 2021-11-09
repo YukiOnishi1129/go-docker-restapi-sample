@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"myapp/db"
+	"myapp/databases"
 	"myapp/models"
 
 	"gorm.io/gorm"
 )
 
-func seeds(dbConn *gorm.DB) error {
+func seeds(db *gorm.DB) error {
 	for i := 0; i < 10; i++ {
 		item := models.Item{
 			JanCode: "111",
@@ -19,7 +19,7 @@ func seeds(dbConn *gorm.DB) error {
 			Stock: 1,
 			Discontinued: false,
 		}
-		if err := dbConn.Create(&item).Error; err != nil {
+		if err := db.Create(&item).Error; err != nil {
 			fmt.Printf("%+v", err)
 		}
 	}
@@ -28,12 +28,12 @@ func seeds(dbConn *gorm.DB) error {
 
 
 func main() {
-	dbConn := db.OpenConnection()
+	db := databases.OpenConnection()
 	// dBを閉じる
-	DB, _ := dbConn.DB()
+	DB, _ := db.DB()
 	defer DB.Close()
 
-	if err := seeds(dbConn); err != nil {
+	if err := seeds(db); err != nil {
 		fmt.Printf("%+v", err)
         return
 	}
