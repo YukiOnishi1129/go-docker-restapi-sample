@@ -1,8 +1,6 @@
 package main
 
-import (
-	"myapp/controllers"
-)
+import "myapp/router"
 
 // func handler(writer http.ResponseWriter, _ *http.Request) {
 // 	fmt.Fprint(writer, "Hello World")
@@ -15,5 +13,6 @@ func main() {
 	// db.Migrate()
 
 	// API起動
-	controllers.StartWebServer()
+	// controllers.StartWebServer()
+	router.StartWebServer()
 }

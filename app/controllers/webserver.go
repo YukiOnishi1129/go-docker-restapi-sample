@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 )
+
+
 
 type DeleteResponse struct {
     Id string `json:"id"`
@@ -35,7 +38,7 @@ var items []*ItemParams
 /*
 * ルートAPI
 */
-func rootPage(w http.ResponseWriter, r *http.Request) {
+func RootPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the Go Api Server")
     fmt.Println("Root endpoint is hooked!")
 }
@@ -43,17 +46,23 @@ func rootPage(w http.ResponseWriter, r *http.Request) {
 /*
 * 全てのItemを取得
 */
-func fetchAllItems(w http.ResponseWriter, r *http.Request) {
+func FetchAllItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
+    // databases.DB_CONN.Find(&items)
     //json.NewEncoder()
     // Go言語のデータ型からjsonに変換する
 	// json.NewEncoder(w).Encode(items)
+    responseBody, err := json.Marshal(items)
+    if err != nil {
+        log.Fatal(err)
+    }
+    w.Write(responseBody)
 }
 
 /*
 * IDに紐づくItemを取得
 */
-func fetchSingleItem(w http.ResponseWriter, r *http.Request) {
+func FetchSingleItem(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-type", "application/json")
     // mux.Vars(): パスパラメータの取得
     vars := mux.Vars(r)
@@ -69,7 +78,7 @@ func fetchSingleItem(w http.ResponseWriter, r *http.Request) {
 /*
 * 新規作成
 */
-func createItem(w http.ResponseWriter, r *http.Request) {
+func CreateItem(w http.ResponseWriter, r *http.Request) {
     // ioutil: ioに特化したパッケージ
     reqBody,_ := ioutil.ReadAll(r.Body)
     var item ItemParams
@@ -87,7 +96,7 @@ func createItem(w http.ResponseWriter, r *http.Request) {
 /*
 * 削除
 */
-func deleteItem(w http.ResponseWriter, r *http.Request) {
+func DeleteItem(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
@@ -102,7 +111,7 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 /*
 * 更新
 */
-func updateItem(w http.ResponseWriter, r *http.Request) {
+func UpdateItem(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
@@ -136,21 +145,21 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 /*
 * ルーティングを定義
 */
-func StartWebServer() error {
+func StartWebServer() error  {
     fmt.Println("Rest API with Mux Routers")
     router := mux.NewRouter().StrictSlash(true)
 
     // DB接続開始
-	// const dbConn := db.OpenConnection()
+	// db := databases.OpenConnection()
 
     // router.HandleFunc({ エンドポイント }, { レスポンス関数 }).Methods({ リクエストメソッド（複数可能） })
-    router.HandleFunc("/", rootPage)
-    router.HandleFunc("/items", fetchAllItems).Methods("GET")
-    router.HandleFunc("/item/{id}", fetchSingleItem).Methods("GET")
+    router.HandleFunc("/", RootPage)
+    router.HandleFunc("/items", FetchAllItems).Methods("GET")
+    router.HandleFunc("/item/{id}", FetchSingleItem).Methods("GET")
 
-    router.HandleFunc("/item", createItem).Methods("POST")
-    router.HandleFunc("/item/{id}", deleteItem).Methods("DELETE")
-    router.HandleFunc("/item/{id}", updateItem).Methods("PUT")
+    router.HandleFunc("/item", CreateItem).Methods("POST")
+    router.HandleFunc("/item/{id}", DeleteItem).Methods("DELETE")
+    router.HandleFunc("/item/{id}", UpdateItem).Methods("PUT")
 
     return http.ListenAndServe(fmt.Sprintf(":%d", 3000), router)
 }
