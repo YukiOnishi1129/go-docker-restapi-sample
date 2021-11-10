@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"myapp/models"
+	service_item "myapp/services"
 	"net/http"
 	"time"
 
@@ -48,6 +50,8 @@ func FetchAllItems(w http.ResponseWriter, r *http.Request) {
     //json.NewEncoder()
     // Go言語のデータ型からjsonに変換する
 	// json.NewEncoder(w).Encode(items)
+    var items []models.Item
+    service_item.GetAllItem(&items)
     responseBody, err := json.Marshal(items)
     if err != nil {
         log.Fatal(err)

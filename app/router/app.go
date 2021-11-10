@@ -32,6 +32,7 @@ func setupRouting() {
 */
 func StartWebServer() error {
 	fmt.Println("Rest API with Mux Routers")
+	// ルーティング設定
 	setupRouting()
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", 3000), Router)
