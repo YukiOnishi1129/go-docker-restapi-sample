@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"myapp/db"
 	"myapp/models"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -11,9 +12,9 @@ import (
 func seeds(db *gorm.DB) error {
 	for i := 0; i < 10; i++ {
 		item := models.Item{
-			JanCode: "111",
-			ItemName: "タイトル",
-			Price: 111,
+			JanCode: "00"+strconv.Itoa(i),
+			ItemName: "item_"+strconv.Itoa(i),
+			Price: 111 * i,
 			CategoryId: 1,
 			SeriesId: 1,
 			Stock: 1,

@@ -2,7 +2,7 @@ package router
 
 import (
 	"fmt"
-	"myapp/controllers"
+	controller_item "myapp/controllers"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -16,13 +16,13 @@ var Router *mux.Router
 func setupRouting() {
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/", controllers.RootPage)
-    router.HandleFunc("/items", controllers.FetchAllItems).Methods("GET")
-    router.HandleFunc("/item/{id}", controllers.FetchSingleItem).Methods("GET")
+	router.HandleFunc("/", controller_item.RootPage)
+    router.HandleFunc("/items", controller_item.FetchAllItems).Methods("GET")
+    router.HandleFunc("/item/{id}", controller_item.FetchSingleItem).Methods("GET")
 
-    router.HandleFunc("/item", controllers.CreateItem).Methods("POST")
-    router.HandleFunc("/item/{id}", controllers.DeleteItem).Methods("DELETE")
-    router.HandleFunc("/item/{id}", controllers.UpdateItem).Methods("PUT")
+    router.HandleFunc("/item", controller_item.CreateItem).Methods("POST")
+    router.HandleFunc("/item/{id}", controller_item.DeleteItem).Methods("DELETE")
+    router.HandleFunc("/item/{id}", controller_item.UpdateItem).Methods("PUT")
 
 	Router = router
 }
@@ -30,7 +30,7 @@ func setupRouting() {
 /*
  サーバー起動
 */
-func  StartWebServer() error {
+func StartWebServer() error {
 	fmt.Println("Rest API with Mux Routers")
 	setupRouting()
 

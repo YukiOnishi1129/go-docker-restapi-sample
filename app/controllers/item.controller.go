@@ -1,23 +1,19 @@
-package controllers
+package controller_item
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
-
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
-
-
 type DeleteResponse struct {
     Id string `json:"id"`
 }
-
 type ItemParams struct {
     Id           string    `json:"id"`
     JanCode      string    `json:"jan_code,omitempty"`
@@ -142,27 +138,7 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 }
 
 // 先頭を「大文字」にすると外部ファイルから読み込めるようになります。（export）
-/*
-* ルーティングを定義
-*/
-func StartWebServer() error  {
-    fmt.Println("Rest API with Mux Routers")
-    router := mux.NewRouter().StrictSlash(true)
 
-    // DB接続開始
-	// db := databases.OpenConnection()
-
-    // router.HandleFunc({ エンドポイント }, { レスポンス関数 }).Methods({ リクエストメソッド（複数可能） })
-    router.HandleFunc("/", RootPage)
-    router.HandleFunc("/items", FetchAllItems).Methods("GET")
-    router.HandleFunc("/item/{id}", FetchSingleItem).Methods("GET")
-
-    router.HandleFunc("/item", CreateItem).Methods("POST")
-    router.HandleFunc("/item/{id}", DeleteItem).Methods("DELETE")
-    router.HandleFunc("/item/{id}", UpdateItem).Methods("PUT")
-
-    return http.ListenAndServe(fmt.Sprintf(":%d", 3000), router)
-}
 
 // モックデータを初期値として読み込みます
 func init() {
