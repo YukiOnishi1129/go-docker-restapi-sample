@@ -22,12 +22,12 @@ func InsertItem(item *models.Item) {
 
 func DeleteItem(key string) {
 	db := db.GetDB()
-	db.Where("id = ?", key).Delete(&models.Item{})
+	db.Where("id=?", key).Delete(&models.Item{})
 }
 
 func UpdateItem(item *models.Item, key string) {
 	db := db.GetDB()
-	db.Model(&item).Where("id = ?", key).Updates(
+	db.Model(&item).Where("id=?", key).Updates(
         map[string]interface{}{
             "jan_code":     item.JanCode,
             "item_name":    item.ItemName,

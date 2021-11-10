@@ -123,11 +123,20 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
-    for index, item := range items {
-        if item.Id == id {
-            items = append(items[:index], items[index+1:]...)
-        }
+    service_item.DeleteItem(id)
+    responseBody, err := json.Marshal(DeleteResponse{Id: id})
+    if err != nil {
+        log.Fatal(err)
     }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(responseBody)
+
+    // for index, item := range items {
+    //     if item.Id == id {
+    //         items = append(items[:index], items[index+1:]...)
+    //     }
+    // }
 }
 
 
