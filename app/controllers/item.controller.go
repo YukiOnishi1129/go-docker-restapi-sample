@@ -68,12 +68,23 @@ func FetchSingleItem(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     key := vars["id"] // getパラメーターを取得
 
-    // range: 配列を展開
-    for _, item := range items {
-        if item.Id == key {
-            json.NewEncoder(w).Encode(item)
-        }
+    var item models.Item
+    service_item.GetSIngleItem(&item, key)
+
+    responseBody, err := json.Marshal(item)
+    if err != nil {
+        log.Fatal(err)
     }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(responseBody)
+
+    // range: 配列を展開
+    // for _, item := range items {
+    //     if item.Id == key {
+    //         json.NewEncoder(w).Encode(item)
+    //     }
+    // }
 }
 /*
 * 新規作成
