@@ -8,7 +8,7 @@ import (
 	"myapp/models"
 	service_item "myapp/services"
 	"net/http"
-	"time"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -16,22 +16,22 @@ import (
 type DeleteResponse struct {
     Id string `json:"id"`
 }
-type ItemParams struct {
-    Id           string    `json:"id"`
-    JanCode      string    `json:"jan_code,omitempty"`
-    ItemName     string    `json:"item_name,omitempty"`
-    Price        int       `json:"price,omitempty"`
-    CategoryId   int       `json:"category_id,omitempty"`
-    SeriesId     int       `json:"series_id,omitempty"`
-    Stock        int       `json:"stock,omitempty"`
-    Discontinued bool      `json:"discontinued"`
-    ReleaseDate  time.Time `json:"release_date,omitempty"`
-    CreatedAt    time.Time `json:"created_at"`
-    UpdatedAt    time.Time `json:"updated_at"`
-    DeletedAt    time.Time `json:"deleted_at"`
-}
+// type ItemParams struct {
+//     Id           string    `json:"id"`
+//     JanCode      string    `json:"jan_code,omitempty"`
+//     ItemName     string    `json:"item_name,omitempty"`
+//     Price        int       `json:"price,omitempty"`
+//     CategoryId   int       `json:"category_id,omitempty"`
+//     SeriesId     int       `json:"series_id,omitempty"`
+//     Stock        int       `json:"stock,omitempty"`
+//     Discontinued bool      `json:"discontinued"`
+//     ReleaseDate  time.Time `json:"release_date,omitempty"`
+//     CreatedAt    time.Time `json:"created_at"`
+//     UpdatedAt    time.Time `json:"updated_at"`
+//     DeletedAt    time.Time `json:"deleted_at"`
+// }
 
-var items []*ItemParams
+// var items []*ItemParams
 
 /*
 * ルートAPI
@@ -86,6 +86,7 @@ func FetchSingleItem(w http.ResponseWriter, r *http.Request) {
     //     }
     // }
 }
+
 /*
 * 新規作成
 */
@@ -148,64 +149,76 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
     id := vars["id"]
 
     reqBody, _ := ioutil.ReadAll(r.Body)
-    var updateItem ItemParams
+    var updateItem models.Item
     if err := json.Unmarshal(reqBody, &updateItem); err != nil {
         log.Fatal(err)
     }
 
-    for index, item := range items {
-        if item.Id == id {
-            items[index] = &ItemParams{
-                Id:           item.Id,
-                JanCode:      updateItem.JanCode,
-                ItemName:     updateItem.ItemName,
-                Price:        updateItem.Price,
-                CategoryId:   updateItem.CategoryId,
-                SeriesId:     updateItem.SeriesId,
-                Stock:        updateItem.Stock,
-                Discontinued: updateItem.Discontinued,
-                ReleaseDate:  updateItem.ReleaseDate,
-                CreatedAt:    item.CreatedAt,
-                UpdatedAt:    updateItem.UpdatedAt,
-                DeletedAt:    item.DeletedAt,
-            }
-        }
+    service_item.UpdateItem(&updateItem, id)
+    convertUnitId, _ := strconv.ParseUint(id, 10, 64)
+    updateItem.BaseModel.ID = uint(convertUnitId)
+
+    responseBody, err := json.Marshal(updateItem)
+    if err != nil {
+        log.Fatal(err)
     }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(responseBody)
+
+    // for index, item := range items {
+    //     if item.Id == id {
+    //         items[index] = &ItemParams{
+    //             Id:           item.Id,
+    //             JanCode:      updateItem.JanCode,
+    //             ItemName:     updateItem.ItemName,
+    //             Price:        updateItem.Price,
+    //             CategoryId:   updateItem.CategoryId,
+    //             SeriesId:     updateItem.SeriesId,
+    //             Stock:        updateItem.Stock,
+    //             Discontinued: updateItem.Discontinued,
+    //             ReleaseDate:  updateItem.ReleaseDate,
+    //             CreatedAt:    item.CreatedAt,
+    //             UpdatedAt:    updateItem.UpdatedAt,
+    //             DeletedAt:    item.DeletedAt,
+    //         }
+    //     }
+    // }
 }
 
 // 先頭を「大文字」にすると外部ファイルから読み込めるようになります。（export）
 
 
 // モックデータを初期値として読み込みます
-func init() {
-    items = []*ItemParams{
-        &ItemParams{
-            Id:           "1",
-            JanCode:      "327390283080",
-            ItemName:     "item_1",
-            Price:        2500,
-            CategoryId:   1,
-            SeriesId:     1,
-            Stock:        100,
-            Discontinued: false,
-            ReleaseDate:  time.Now(),
-            CreatedAt:    time.Now(),
-            UpdatedAt:    time.Now(),
-            DeletedAt:    time.Now(),
-        },
-        &ItemParams{
-            Id:           "2",
-            JanCode:      "3273902878656",
-            ItemName:     "item_2",
-            Price:        1200,
-            CategoryId:   2,
-            SeriesId:     2,
-            Stock:        200,
-            Discontinued: false,
-            ReleaseDate:  time.Now(),
-            CreatedAt:    time.Now(),
-            UpdatedAt:    time.Now(),
-            DeletedAt:    time.Now(),
-        },
-    }
-}
+// func init() {
+//     items = []*ItemParams{
+//         &ItemParams{
+//             Id:           "1",
+//             JanCode:      "327390283080",
+//             ItemName:     "item_1",
+//             Price:        2500,
+//             CategoryId:   1,
+//             SeriesId:     1,
+//             Stock:        100,
+//             Discontinued: false,
+//             ReleaseDate:  time.Now(),
+//             CreatedAt:    time.Now(),
+//             UpdatedAt:    time.Now(),
+//             DeletedAt:    time.Now(),
+//         },
+//         &ItemParams{
+//             Id:           "2",
+//             JanCode:      "3273902878656",
+//             ItemName:     "item_2",
+//             Price:        1200,
+//             CategoryId:   2,
+//             SeriesId:     2,
+//             Stock:        200,
+//             Discontinued: false,
+//             ReleaseDate:  time.Now(),
+//             CreatedAt:    time.Now(),
+//             UpdatedAt:    time.Now(),
+//             DeletedAt:    time.Now(),
+//         },
+//     }
+// }
