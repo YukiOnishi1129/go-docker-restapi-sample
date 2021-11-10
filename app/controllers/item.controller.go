@@ -92,7 +92,8 @@ func FetchSingleItem(w http.ResponseWriter, r *http.Request) {
 func CreateItem(w http.ResponseWriter, r *http.Request) {
     // ioutil: ioに特化したパッケージ
     reqBody,_ := ioutil.ReadAll(r.Body)
-    var item ItemParams
+    
+    var item models.Item
     // json.Unmarshal()
     // 第１引数で与えたjsonデータを、第二引数に指定した値にマッピングする
     // 返り値はerrorで、エラーが発生しない場合はnilになる
@@ -100,8 +101,19 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
     }
 
-    items = append(items, &item)
-    json.NewEncoder(w).Encode(item)
+    service_item.InsertItem(&item)
+
+    responseBody, err := json.Marshal(item)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(responseBody)
+
+
+    // items = append(items, &item)
+    // json.NewEncoder(w).Encode(item)
 }
 
 /*
