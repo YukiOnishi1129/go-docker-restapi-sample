@@ -9,7 +9,7 @@ import (
 
 func migrate(dbCon *gorm.DB) {
 	// Migration実行
-	dbCon.AutoMigrate(&models.Item{})
+	dbCon.AutoMigrate(&models.Todo{})
 }
 
 func main() {
