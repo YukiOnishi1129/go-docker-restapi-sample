@@ -68,7 +68,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func deleteItem(w http.ResponseWriter, r *http.Request) {
+func deleteTodo(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
@@ -111,6 +111,6 @@ func SetTodoRouting(router *mux.Router) {
     router.HandleFunc("/todo/{id}", fetchTodoById).Methods("GET")
 
     router.HandleFunc("/todo", createTodo).Methods("POST")
-    router.HandleFunc("/todo/{id}", deleteItem).Methods("DELETE")
+    router.HandleFunc("/todo/{id}", deleteTodo).Methods("DELETE")
     router.HandleFunc("/todo/{id}", updateTodo).Methods("PUT")
 }
