@@ -1,4 +1,4 @@
-package controller_item
+package controllers
 
 import (
 	"encoding/json"

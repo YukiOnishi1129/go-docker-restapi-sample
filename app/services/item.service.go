@@ -1,4 +1,4 @@
-package service_item
+package services
 
 import (
 	"myapp/db"
