@@ -1,11 +1,11 @@
-package controller
+package controllers
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"myapp/models"
-	service "myapp/services"
+	"myapp/services"
 	"net/http"
 	"strconv"
 
@@ -20,7 +20,7 @@ type DeleteTodoResponse struct {
 func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	var todos []models.Todo
-    service.GetAllTodos(&todos)
+    services.GetAllTodos(&todos)
     responseBody, err := json.Marshal(todos)
     if err != nil {
         log.Fatal(err)
@@ -34,7 +34,7 @@ func fetchTodoById(w http.ResponseWriter, r *http.Request) {
     id := vars["id"] 
 
     var todo models.Todo
-    service.GetTodoById(&todo, id)
+    services.GetTodoById(&todo, id)
 
     responseBody, err := json.Marshal(todo)
     if err != nil {
@@ -56,7 +56,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
     }
 
-    service.InsertTodo(&todo)
+    services.InsertTodo(&todo)
 
     responseBody, err := json.Marshal(todo)
     if err != nil {
@@ -72,7 +72,7 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
-    service.DeleteTodo(id)
+    services.DeleteTodo(id)
     responseBody, err := json.Marshal(DeleteResponse{Id: id})
     if err != nil {
         log.Fatal(err)
@@ -92,7 +92,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
     }
 
-    service.UpdateTodo(&updateTodo, id)
+    services.UpdateTodo(&updateTodo, id)
     convertUnitId, _ := strconv.ParseUint(id, 10, 64)
     updateTodo.BaseModel.ID = uint(convertUnitId)
 

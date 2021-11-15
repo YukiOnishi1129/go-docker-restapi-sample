@@ -2,7 +2,7 @@ package router
 
 import (
 	"fmt"
-	controller "myapp/controllers"
+	"myapp/controllers"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -16,8 +16,8 @@ var Router *mux.Router
 func setupRouting() {
 	router := mux.NewRouter().StrictSlash(true)
 
-	controller.SetAppRouting(router)
-	controller.SetTodoRouting(router)
+	controllers.SetAppRouting(router)
+	controllers.SetTodoRouting(router)
 
 	Router = router
 }
