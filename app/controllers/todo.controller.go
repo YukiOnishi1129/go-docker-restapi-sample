@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"myapp/models"
@@ -35,10 +34,9 @@ func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write(responseBody)
 	}
-	fmt.Print(userId)
 
 	var todos []models.Todo
-    services.GetAllTodos(&todos)
+    services.GetAllTodos(&todos, userId)
 
 	// レスポンスデータ作成
 	response := map[string]interface{}{

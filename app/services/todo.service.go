@@ -5,9 +5,9 @@ import (
 	"myapp/models"
 )
 
-func GetAllTodos(todo *[]models.Todo) {
+func GetAllTodos(todo *[]models.Todo, userId int) {
 	db := db.GetDB()
-	db.Find(&todo)
+	db.Where("user_id=?", userId).Find(&todo)
 }
 
 func GetTodoById(todo *models.Todo, id string) {
