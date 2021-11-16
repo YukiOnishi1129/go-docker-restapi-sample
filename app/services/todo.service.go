@@ -10,9 +10,9 @@ func GetAllTodos(todo *[]models.Todo, userId int) {
 	db.Where("user_id=?", userId).Find(&todo)
 }
 
-func GetTodoById(todo *models.Todo, id string) {
+func GetTodoById(todo *models.Todo, id string, userId int) {
 	db := db.GetDB()
-	db.First(&todo, id)
+	db.Where("user_id=?", userId).First(&todo, id)
 }
 
 func InsertTodo(todo *models.Todo) {
