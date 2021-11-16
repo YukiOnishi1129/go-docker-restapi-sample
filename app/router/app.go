@@ -17,6 +17,7 @@ func setupRouting() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	controllers.SetAppRouting(router)
+	controllers.SetAuthRouting(router)
 	controllers.SetTodoRouting(router)
 
 	Router = router

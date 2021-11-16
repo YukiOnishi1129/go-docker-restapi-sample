@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"myapp/models"
 	"myapp/services"
+	"myapp/utils/logic"
 	"net/http"
 	"strconv"
 
@@ -18,13 +20,36 @@ type DeleteTodoResponse struct {
 
 
 func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "application/json")
+	// トークンからuserIdを取得
+	userId, err := logic.GetUserIdFromContext(r)
+	if err != nil {
+		// レスポンスデータ作成
+		response := map[string]interface{}{
+			"err": "認証エラー",
+		}
+		responseBody, err := json.Marshal(response)
+		if err != nil {
+			log.Fatal(err)
+		}
+		w.Header().Set("Content-type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(responseBody)
+	}
+	fmt.Print(userId)
+
 	var todos []models.Todo
     services.GetAllTodos(&todos)
-    responseBody, err := json.Marshal(todos)
+
+	// レスポンスデータ作成
+	response := map[string]interface{}{
+		"todos": todos,
+	}
+    responseBody, err := json.Marshal(response)
     if err != nil {
         log.Fatal(err)
     }
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK) // ステータスコード
     w.Write(responseBody)
 }
 
@@ -107,7 +132,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 
 
 func SetTodoRouting(router *mux.Router) {
-	router.HandleFunc("/todo", fetchAllTodos).Methods("GET")
+	router.Handle("/todo", logic.JwtMiddleware.Handler(http.HandlerFunc(fetchAllTodos))).Methods("GET")
     router.HandleFunc("/todo/{id}", fetchTodoById).Methods("GET")
 
     router.HandleFunc("/todo", createTodo).Methods("POST")

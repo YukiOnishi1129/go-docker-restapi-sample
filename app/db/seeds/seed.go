@@ -6,8 +6,28 @@ import (
 	"myapp/models"
 	"strconv"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
+
+
+func userSeeds(db *gorm.DB) error {
+	for i := 0; i < 10; i++ {
+		hash, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+		// hashed,_ := bcrypt.GenerateFromPassword([]byte("password"),12)
+		user := models.User {
+			Name: "ユーザー"+strconv.Itoa(i+1),
+			Email: "sample"+strconv.Itoa(i+1)+"@gmail.com",
+			Password: string(hash),
+		}
+
+		if err := db.Create(&user).Error; err != nil {
+			fmt.Printf("%+v", err)
+		}
+	}
+	return nil
+}
+
 
 func todoSeeds(db *gorm.DB) error {
 	for i := 0; i < 10; i++ {
@@ -23,24 +43,6 @@ func todoSeeds(db *gorm.DB) error {
 	return nil
 }
 
-// func itemSeeds(db *gorm.DB) error {
-// 	for i := 0; i < 10; i++ {
-// 		item := models.Item{
-// 			JanCode: "00"+strconv.Itoa(i),
-// 			ItemName: "item_"+strconv.Itoa(i),
-// 			Price: 111 * i,
-// 			CategoryId: 1,
-// 			SeriesId: 1,
-// 			Stock: 1,
-// 			Discontinued: false,
-// 		}
-// 		if err := db.Create(&item).Error; err != nil {
-// 			fmt.Printf("%+v", err)
-// 		}
-// 	}
-// 	return nil
-// }
-
 
 func main() {
 	db.Init()
@@ -48,6 +50,11 @@ func main() {
 	// dBを閉じる
 	defer db.CloseDB()
 
+	if err := userSeeds(dbCon); err != nil {
+		fmt.Printf("%+v", err)
+        return
+	}
+	
 	if err := todoSeeds(dbCon); err != nil {
 		fmt.Printf("%+v", err)
         return
