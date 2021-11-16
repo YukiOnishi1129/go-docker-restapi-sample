@@ -36,7 +36,7 @@ func CreateJwtToken(user *models.User)  {
 		return
 	}
 	// 電子署名
-	tokenString, _ := token.SignedString([]byte(os.Getenv("SIGNINGKEY")))
+	tokenString, _ := token.SignedString([]byte(os.Getenv("JWT_KEY")))
 
 	JwtToken = []byte(tokenString)
 }
