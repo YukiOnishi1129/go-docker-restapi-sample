@@ -10,8 +10,6 @@ services:
       - ./app:/app
       - /etc/localtime:/etc/localtime:ro # タイムゾーンを日本時刻に設定
     working_dir: /app
-    environment:
-      TZ: Asia/Tokyo # タイムゾーンを日本時刻に設定
     # command: sh -c 'yarn && yarn start:dev '
     ports:
       - ${BACKEND_PORT}:3000
@@ -24,6 +22,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - "TZ=Asia/Tokyo" # タイムゾーンを日本時刻に設定
 
   db:
     container_name: ${MYSQL_HOST}

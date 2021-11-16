@@ -14,7 +14,6 @@ import (
 func userSeeds(db *gorm.DB) error {
 	for i := 0; i < 10; i++ {
 		hash, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
-		// hashed,_ := bcrypt.GenerateFromPassword([]byte("password"),12)
 		user := models.User {
 			Name: "ユーザー"+strconv.Itoa(i+1),
 			Email: "sample"+strconv.Itoa(i+1)+"@gmail.com",
@@ -31,9 +30,16 @@ func userSeeds(db *gorm.DB) error {
 
 func todoSeeds(db *gorm.DB) error {
 	for i := 0; i < 10; i++ {
+		var userId int
+		if i < 5 {
+			userId = 1
+		} else {
+			userId = 2
+		}
 		todo := models.Todo {
 			Title: "タイトル"+strconv.Itoa(i+1),
 			Comment: "コメント"+strconv.Itoa(i+1),
+			UserId: userId,
 		}
 
 		if err := db.Create(&todo).Error; err != nil {

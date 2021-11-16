@@ -5,14 +5,14 @@ import (
 	"myapp/models"
 )
 
-func GetAllTodos(todo *[]models.Todo) {
+func GetAllTodos(todo *[]models.Todo, userId int) {
 	db := db.GetDB()
-	db.Find(&todo)
+	db.Where("user_id=?", userId).Find(&todo)
 }
 
-func GetTodoById(todo *models.Todo, id string) {
+func GetTodoById(todo *models.Todo, id string, userId int) {
 	db := db.GetDB()
-	db.First(&todo, id)
+	db.Where("user_id=?", userId).First(&todo, id)
 }
 
 func InsertTodo(todo *models.Todo) {
@@ -20,16 +20,17 @@ func InsertTodo(todo *models.Todo) {
 	db.Create(&todo)
 }
 
-func DeleteTodo(id string) {
+func DeleteTodo(id string, userId int) {
 	db := db.GetDB()
-	db.Where("id=?", id).Delete(&models.Todo{})
+	db.Where("id=? AND user_id=?", id, userId).Delete(&models.Todo{})
 }
 
 func UpdateTodo(todo *models.Todo, id string) {
 	db := db.GetDB()
-	db.Model(&todo).Where("id=?", id).Updates(
+	db.Model(&todo).Where("id=? AND user_id=?", id, todo.UserId).Updates(
         map[string]interface{}{
             "title":     todo.Title,
             "comment":    todo.Comment,
+			"user_id": todo.UserId,
         })
 }
