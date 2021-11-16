@@ -21,6 +21,7 @@ type DeleteTodoResponse struct {
  Todoリスト取得
 */
 func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-type", "application/json")
 	// トークンからuserIdを取得
 	userId, err := logic.GetUserIdFromContext(r)
 	if err != nil {
@@ -32,7 +33,6 @@ func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		w.Header().Set("Content-type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write(responseBody)
 	}
@@ -48,7 +48,6 @@ func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         log.Fatal(err)
     }
-	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK) // ステータスコード
     w.Write(responseBody)
 }
@@ -100,7 +99,25 @@ func fetchTodoById(w http.ResponseWriter, r *http.Request) {
     w.Write(responseBody)
 }
 
+/*
+ Todo新規登録
+*/
 func createTodo(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-type", "application/json")
+    // トークンからuserIdを取得
+	userId, err := logic.GetUserIdFromContext(r)
+	if err != nil {
+		// レスポンスデータ作成
+		response := map[string]interface{}{
+			"err": "認証エラー",
+		}
+		responseBody, err := json.Marshal(response)
+		if err != nil {
+			log.Fatal(err)
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(responseBody)
+	}
     // ioutil: ioに特化したパッケージ
     reqBody,_ := ioutil.ReadAll(r.Body)
     var todo models.Todo
@@ -110,6 +127,8 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
     if err := json.Unmarshal(reqBody, &todo); err != nil {
         log.Fatal(err)
     }
+
+    todo.UserId = userId
 
     services.InsertTodo(&todo)
 
@@ -165,7 +184,7 @@ func SetTodoRouting(router *mux.Router) {
 	router.Handle("/todo", logic.JwtMiddleware.Handler(http.HandlerFunc(fetchAllTodos))).Methods("GET")
     router.Handle("/todo/{id}", logic.JwtMiddleware.Handler(http.HandlerFunc(fetchTodoById))).Methods("GET")
 
-    router.HandleFunc("/todo", createTodo).Methods("POST")
-    router.HandleFunc("/todo/{id}", deleteTodo).Methods("DELETE")
-    router.HandleFunc("/todo/{id}", updateTodo).Methods("PUT")
+    router.Handle("/todo", logic.JwtMiddleware.Handler(http.HandlerFunc(createTodo))).Methods("POST")
+    router.Handle("/todo/{id}", logic.JwtMiddleware.Handler(http.HandlerFunc(deleteTodo))).Methods("DELETE")
+    router.Handle("/todo/{id}", logic.JwtMiddleware.Handler(http.HandlerFunc(updateTodo))).Methods("PUT")
 }
