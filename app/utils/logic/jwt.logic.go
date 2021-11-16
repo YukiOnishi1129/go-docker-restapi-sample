@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"myapp/models"
 	"os"
+	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/joho/godotenv"
 )
 
-var JwtToken []byte
+var JwtToken string
 
 /*
  jwtトークンの新規作成
@@ -21,9 +23,11 @@ func CreateJwtToken(user *models.User)  {
 	// claimsのセット
 	claims := token.Claims.(jwt.MapClaims)
 	claims["admin"] = true
-	claims["email"] = user.Email
+	claims["sub"] = strconv.Itoa(int(user.ID)) + user.Email + user.Name
 	claims["name"] = user.Name
-	claims["iat"] = time.Now() // jwtの発行時間
+	// latを取り除かないとミドルウェアで「Token used before issued」エラーになる
+	// https://github.com/dgrijalva/jwt-go/issues/314#issuecomment-812775567
+	// claims["iat"] = time.Now() // jwtの発行時間
 	// 経過時間
 	// 経過時間を過ぎたjetは処理しないようになる
 	// ここでは24時間の経過時間をリミットにしている
@@ -38,12 +42,22 @@ func CreateJwtToken(user *models.User)  {
 	// 電子署名
 	tokenString, _ := token.SignedString([]byte(os.Getenv("JWT_KEY")))
 
-	JwtToken = []byte(tokenString)
+	JwtToken = tokenString
 }
 
 /*
  jwtトークンを取得
 */
-func GetJwtToken() []byte {
+func GetJwtToken() string {
 	return JwtToken
 }
+
+/*
+ jwt認証のミドルウェア
+*/
+var JwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_KEY")), nil
+	},
+	SigningMethod: jwt.SigningMethodHS256,
+})

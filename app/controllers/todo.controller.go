@@ -6,6 +6,7 @@ import (
 	"log"
 	"myapp/models"
 	"myapp/services"
+	"myapp/utils/logic"
 	"net/http"
 	"strconv"
 
@@ -107,7 +108,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 
 
 func SetTodoRouting(router *mux.Router) {
-	router.HandleFunc("/todo", fetchAllTodos).Methods("GET")
+	router.Handle("/todo", logic.JwtMiddleware.Handler(http.HandlerFunc(fetchAllTodos))).Methods("GET")
     router.HandleFunc("/todo/{id}", fetchTodoById).Methods("GET")
 
     router.HandleFunc("/todo", createTodo).Methods("POST")
