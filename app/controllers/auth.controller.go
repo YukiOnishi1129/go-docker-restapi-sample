@@ -7,42 +7,13 @@ import (
 	"log"
 	"myapp/db"
 	"myapp/models"
+	"myapp/utils/logic"
+	"myapp/utils/validation"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type SingInRequest struct {
-	Email string `json:"email"`
-	Password string `json:"password"`
-}
-
-/*
- ログインパラメータのバリデーション
-*/
-func SignInValidate(signInRequest SingInRequest) error {
-	return validation.ValidateStruct(&signInRequest,
-		validation.Field(
-			&signInRequest.Email,
-			validation.Required.Error("メールアドレスは必須入力です。"),
-			validation.RuneLength(5, 40).Error("メールアドレスは 5～40 文字です"),
-			is.Email.Error("メールアドレスを入力して下さい"),
-		),
-		validation.Field(
-			&signInRequest.Password,
-			validation.Required.Error("パスワードは必須入力です。"),
-			validation.Length(6, 20).Error("パスワードは6文字以上、20字以内で入力してください。"),
-			is.Alphanumeric.Error("パスワードは英数字で入力してください。"),
-		),
-	)
-}
 
 /*
  ログイン処理
@@ -51,14 +22,14 @@ func singIn(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// RequestのBodyデータを取得
 		reqBody, _ := ioutil.ReadAll(r.Body)
-		var signInRequestParam SingInRequest
+		var signInRequestParam models.SingInRequest
 		// Unmarshal: jsonを構造体に変換
 		if err := json.Unmarshal(reqBody, &signInRequestParam); err != nil {
 			log.Fatal(err)
 		}
 
 		// バリデーション
-		if err := SignInValidate(signInRequestParam); err != nil {
+		if err := validation.SignInValidate(signInRequestParam); err != nil {
 			response := map[string]interface{}{
 				"error": err,
 			}
@@ -99,31 +70,11 @@ func singIn(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// jwtトークンを返す
-		// headerのセット
-		token := jwt.New(jwt.SigningMethodHS256)
-		// claimsのセット
-		claims := token.Claims.(jwt.MapClaims)
-		claims["admin"] = true
-		claims["email"] = user.Email
-		claims["name"] = user.Name
-		claims["iat"] = time.Now() // jwtの発行時間
-		// 経過時間
-		// 経過時間を過ぎたjetは処理しないようになる
-		// ここでは24時間の経過時間をリミットにしている
-		claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-		// .envを読み込む
-		err := godotenv.Load()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		// 電子署名
-		tokenString, _ := token.SignedString([]byte(os.Getenv("SIGNINGKEY")))
+		logic.CreateJwtToken(&user)
 
 		// レスポンスの構造体を作る
 		response := map[string]interface{}{
-			"token": []byte(tokenString),
+			"token": logic.GetJwtToken(),
 			"user": user,
 		}
 
@@ -137,8 +88,6 @@ func singIn(w http.ResponseWriter, r *http.Request) {
 		w.Write(responseBody)
 	}
 }
-
-
 
 func SetAuthRouting(router *mux.Router) {
 	router.HandleFunc("/singin", singIn).Methods("POST")
