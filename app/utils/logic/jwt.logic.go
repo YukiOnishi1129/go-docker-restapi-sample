@@ -24,6 +24,7 @@ func CreateJwtToken(user *models.User)  {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["admin"] = true
 	claims["sub"] = strconv.Itoa(int(user.ID)) + user.Email + user.Name
+	claims["id"] = user.ID
 	claims["name"] = user.Name
 	// latを取り除かないとミドルウェアで「Token used before issued」エラーになる
 	// https://github.com/dgrijalva/jwt-go/issues/314#issuecomment-812775567
