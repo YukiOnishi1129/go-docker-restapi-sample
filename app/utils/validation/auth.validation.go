@@ -26,3 +26,29 @@ func SignInValidate(signInRequest models.SingInRequest) error {
 		),
 	)
 }
+
+
+/*
+ 会員登録パラメータのバリデーション
+*/
+func SignUpValidate(signUpRequest models.SignUpRequest) error {
+	return validation.ValidateStruct(&signUpRequest,
+		validation.Field(
+			&signUpRequest.Name,
+			validation.Required.Error("お名前は必須入力です。"),
+			validation.RuneLength(5, 10).Error("お名前は 5～10 文字です"),
+		),
+		validation.Field(
+			&signUpRequest.Email,
+			validation.Required.Error("メールアドレスは必須入力です。"),
+			validation.RuneLength(5, 40).Error("メールアドレスは 5～40 文字です"),
+			is.Email.Error("メールアドレスの形式が間違っています。"),
+		),
+		validation.Field(
+			&signUpRequest.Password,
+			validation.Required.Error("パスワードは必須入力です。"),
+			validation.RuneLength(6, 20).Error("パスワードは 6~20 文字です。"),
+			is.Alphanumeric.Error("パスワードは英数字で入力してください。"),
+		),
+	)
+}
