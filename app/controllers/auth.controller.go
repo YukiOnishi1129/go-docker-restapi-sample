@@ -8,8 +8,12 @@ import (
 	"myapp/db"
 	"myapp/models"
 	"net/http"
+	"os"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -42,9 +46,36 @@ func singIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: jwtトークンを返す
+	// headerのセット
+    token := jwt.New(jwt.SigningMethodHS256)
+	// claimsのセット
+    claims := token.Claims.(jwt.MapClaims)
+    claims["admin"] = true
+    claims["email"] = user.Email
+    claims["name"] = user.Name
+    claims["iat"] = time.Now() // jwtの発行時間
+	// 経過時間
+	// 経過時間を過ぎたjetは処理しないようになる
+	// ここでは24時間の経過時間をリミットにしている
+    claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	// .envを読み込む
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// 電子署名
+    tokenString, _ := token.SignedString([]byte(os.Getenv("SIGNINGKEY")))
+
+	// レスポンスの構造体を作る
+	response := map[string]interface{}{
+		"token": []byte(tokenString),
+		"user": user,
+	}
 
 	// レスポンスデータ作成
-	responseBody, err := json.Marshal(user)
+	responseBody, err := json.Marshal(response)
     if err != nil {
 		fmt.Printf("レスポンスデータ失敗")
         log.Fatal(err)
