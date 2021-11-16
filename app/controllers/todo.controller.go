@@ -190,16 +190,55 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
     // w.Write(responseBody)
 }
 
+/*
+ Todo更新処理
+*/
 func updateTodo(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-type", "application/json")
+    // トークンからuserIdを取得
+	userId, err := logic.GetUserIdFromContext(r)
+	if err != nil {
+		// レスポンスデータ作成
+		response := map[string]interface{}{
+			"err": "認証エラー",
+		}
+		responseBody, err := json.Marshal(response)
+		if err != nil {
+			log.Fatal(err)
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write(responseBody)
+	}
+
     vars := mux.Vars(r)
     id := vars["id"]
 
     reqBody, _ := ioutil.ReadAll(r.Body)
+    var todo models.Todo
+    if err := json.Unmarshal(reqBody, &todo); err != nil {
+        log.Fatal(err)
+    }
     var updateTodo models.Todo
     if err := json.Unmarshal(reqBody, &updateTodo); err != nil {
         log.Fatal(err)
     }
 
+    updateTodo.UserId = userId
+
+    // 更新データの確認
+    services.GetTodoById(&todo, id, userId)
+    if todo.ID == 0 {
+        // レスポンスデータ作成
+		response := map[string]interface{}{
+			"err": "データがありません。",
+		}
+		responseBody, _ := json.Marshal(response)
+        w.WriteHeader(http.StatusBadRequest)
+		w.Write(responseBody)
+        return
+    }
+
+    // データ更新
     services.UpdateTodo(&updateTodo, id)
     convertUnitId, _ := strconv.ParseUint(id, 10, 64)
     updateTodo.BaseModel.ID = uint(convertUnitId)
@@ -209,7 +248,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
     }
 
-    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK) // ステータスコード
     w.Write(responseBody)
 }
 

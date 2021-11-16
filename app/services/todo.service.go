@@ -27,9 +27,10 @@ func DeleteTodo(id string, userId int) {
 
 func UpdateTodo(todo *models.Todo, id string) {
 	db := db.GetDB()
-	db.Model(&todo).Where("id=?", id).Updates(
+	db.Model(&todo).Where("id=? AND user_id=?", id, todo.UserId).Updates(
         map[string]interface{}{
             "title":     todo.Title,
             "comment":    todo.Comment,
+			"user_id": todo.UserId,
         })
 }
