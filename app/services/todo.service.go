@@ -20,9 +20,9 @@ func InsertTodo(todo *models.Todo) {
 	db.Create(&todo)
 }
 
-func DeleteTodo(id string) {
+func DeleteTodo(id string, userId int) {
 	db := db.GetDB()
-	db.Where("id=?", id).Delete(&models.Todo{})
+	db.Where("id=? AND user_id=?", id, userId).Delete(&models.Todo{})
 }
 
 func UpdateTodo(todo *models.Todo, id string) {
