@@ -7,6 +7,7 @@ import (
 	"log"
 	"myapp/db"
 	"myapp/models"
+	"myapp/services"
 	"myapp/utils/logic"
 	"myapp/utils/validation"
 	"net/http"
@@ -102,16 +103,16 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// バリデーション
-		if err := validation.SignUpValidate(signUpRequestParam); err != nil {
-			response := map[string]interface{}{
-				"error": err,
-			}
-			responseBody, _ := json.Marshal(response)
-			w.Header().Set("Content-type", "application/json")
-			w.WriteHeader(http.StatusBadRequest) // ステータスコード
-			w.Write(responseBody)
+		if err := services.SignUpValidation(w, signUpRequestParam); err != nil {
 			return
 		}
+		// if err := validation.SignUpValidate(signUpRequestParam); err != nil {
+		// 	responseBody := logic.CreateErrorResponse(err)
+		// 	w.Header().Set("Content-type", "application/json")
+		// 	w.WriteHeader(http.StatusBadRequest) // ステータスコード
+		// 	w.Write(responseBody)
+		// 	return
+		// }
 
 		// 同じメールアドレスのユーザーがいないか検証
 		var users []models.User
