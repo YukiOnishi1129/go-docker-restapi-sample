@@ -29,8 +29,7 @@ func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
     }
 
     // todoリスト取得処理
-	var todos []models.Todo
-    alltodo, err := services.GetAllTodos(&todos, userId)
+    alltodo, err := services.GetAllTodos(w, userId)
     if err !=nil {
         return
     }
@@ -45,20 +44,11 @@ func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
 */
 func fetchTodoById(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
-    // トークンからuserIdを取得
-	userId, err := logic.GetUserIdFromContext(r)
-	if err != nil {
-		// レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "認証エラー",
-		}
-		responseBody, err := json.Marshal(response)
-		if err != nil {
-			log.Fatal(err)
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(responseBody)
-	}
+	// tokenからuserIdを所得
+    userId, err := services.GetUserIdFromToken(w,r)
+    if userId == 0 || err != nil {
+        return
+    }
 
     vars := mux.Vars(r)
     id := vars["id"] 

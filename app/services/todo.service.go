@@ -10,16 +10,19 @@ import (
 )
 
 /*
- Todoリストを取得しレスポンスように変換
+ Todoリストを取得しレスポンス用に変換
 */
-func GetAllTodos(todos *[]models.Todo, userId int) ([]models.BaseTodoResponse, error) {
-	if err := repositories.GetAllTodos(todos, userId); err != nil {
+func GetAllTodos(w http.ResponseWriter, userId int) ([]models.BaseTodoResponse, error) {
+	var todos []models.Todo
+	// todoリストデータ取得
+	if err := repositories.GetAllTodos(&todos, userId); err != nil {
+		logic.SendResponse(w, logic.CreateErrorStringResponse("データ取得に失敗"), http.StatusInternalServerError)
 		return nil, err
 	}
 
+	// レスポンス用の構造体に変換
 	var responseTodos []models.BaseTodoResponse
-
-	for _, todo := range *todos {
+	for _, todo := range todos {
 		var newTodo models.BaseTodoResponse
 		newTodo.BaseModel.ID = todo.BaseModel.ID
 		newTodo.BaseModel.CreatedAt = todo.BaseModel.CreatedAt
