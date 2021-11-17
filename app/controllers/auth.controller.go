@@ -9,7 +9,6 @@ import (
 	"myapp/models"
 	"myapp/services"
 	"myapp/utils/logic"
-	"myapp/utils/validation"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -23,21 +22,16 @@ func singIn(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// RequestのBodyデータを取得
 		reqBody, _ := ioutil.ReadAll(r.Body)
-		var signInRequestParam models.SingInRequest
+		var signInRequestParam models.SignInRequest
 		// Unmarshal: jsonを構造体に変換
 		if err := json.Unmarshal(reqBody, &signInRequestParam); err != nil {
 			log.Fatal(err)
+			errMessage := "リクエストパラメータを構造体へ変換処理でエラー発生"
+			logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusInternalServerError)
 		}
 
 		// バリデーション
-		if err := validation.SignInValidate(signInRequestParam); err != nil {
-			response := map[string]interface{}{
-				"error": err,
-			}
-			responseBody, _ := json.Marshal(response)
-			w.Header().Set("Content-type", "application/json")
-			w.WriteHeader(http.StatusBadRequest) // ステータスコード
-			w.Write(responseBody)
+		if err := services.ValidateSignIn(w, signInRequestParam); err != nil {
 			return
 		}
 
@@ -99,7 +93,7 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 	var signUpRequestParam models.SignUpRequest
 	if err := json.Unmarshal(reqBody, &signUpRequestParam); err != nil {
 		log.Fatal(err)
-		errMessage := "json変換処理でエラー発生"
+		errMessage := "リクエストパラメータを構造体へ変換処理でエラー発生"
 		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusInternalServerError)
 	}
 

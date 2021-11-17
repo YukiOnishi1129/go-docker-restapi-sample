@@ -11,6 +11,20 @@ import (
 )
 
 /*
+ ログインバリデーション処理
+*/
+func ValidateSignIn(w http.ResponseWriter, signInRequestParam models.SignInRequest) error {
+	// バリデーション
+	if err := validation.SignInValidate(signInRequestParam); err != nil {
+		// バリデーションエラーのレスポンスを送信
+		logic.SendResponse(w, logic.CreateErrorResponse(err), http.StatusBadRequest)
+		return err
+	}
+
+	return nil
+}
+
+/*
  会員登録バリデーション処理
 */
 func ValidateSignUp(w http.ResponseWriter, signUpRequestParam models.SignUpRequest) error {

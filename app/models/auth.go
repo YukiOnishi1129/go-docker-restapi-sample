@@ -3,7 +3,7 @@ package models
 /*
  ログインパラメータ
 */
-type SingInRequest struct {
+type SignInRequest struct {
 	Email string `json:"email"`
 	Password string `json:"password"`
 }
