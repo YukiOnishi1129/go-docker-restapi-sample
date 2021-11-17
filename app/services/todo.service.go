@@ -1,13 +1,36 @@
 package services
 
 import (
+	"encoding/json"
 	"myapp/db"
 	"myapp/models"
+	"myapp/repositories"
+	"myapp/utils/logic"
+	"net/http"
 )
 
-func GetAllTodos(todo *[]models.Todo, userId int) {
-	db := db.GetDB()
-	db.Joins("User").Where("user_id=?", userId).Find(&todo)
+/*
+ Todoリストを取得しレスポンスように変換
+*/
+func GetAllTodos(todos *[]models.Todo, userId int) ([]models.BaseTodoResponse, error) {
+	if err := repositories.GetAllTodos(todos, userId); err != nil {
+		return nil, err
+	}
+
+	var responseTodos []models.BaseTodoResponse
+
+	for _, todo := range *todos {
+		var newTodo models.BaseTodoResponse
+		newTodo.BaseModel.ID = todo.BaseModel.ID
+		newTodo.BaseModel.CreatedAt = todo.BaseModel.CreatedAt
+		newTodo.BaseModel.UpdatedAt = todo.BaseModel.UpdatedAt
+		newTodo.BaseModel.DeletedAt = todo.BaseModel.DeletedAt
+		newTodo.Title = todo.Title
+		newTodo.Comment = todo.Comment
+		responseTodos = append(responseTodos, newTodo)
+	}
+
+	return responseTodos, nil
 }
 
 func GetTodoById(todo *models.Todo, id string, userId int) {
@@ -33,4 +56,18 @@ func UpdateTodo(todo *models.Todo, id string) {
             "comment":    todo.Comment,
 			"user_id": todo.UserId,
         })
+}
+
+
+/*
+ ログインAPI・会員登録APIのレスポンス送信処理
+*/
+func SendAllTodoResponse(w http.ResponseWriter, todos *[]models.Todo) {
+	var response models.AllTodoResponse
+	// response.Todos
+	// レスポンスデータ作成
+	responseBody, _ := json.Marshal(response)
+
+	// レスポンス送信
+	logic.SendResponse(w, responseBody, http.StatusCreated)
 }

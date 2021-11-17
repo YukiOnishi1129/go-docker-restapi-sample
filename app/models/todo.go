@@ -19,10 +19,7 @@ type BaseTodoResponse struct {
 	Comment   string `gorm:"type:text" json:"comment,omitempty"`
 }
 
-type TodoResponse struct {
-	Todo BaseTodoResponse `json:"todo"`
-}
 
 type AllTodoResponse struct {
-	Todos []TodoResponse `json:"todos"`
+	Todos []BaseTodoResponse `json:"todos"`
 }

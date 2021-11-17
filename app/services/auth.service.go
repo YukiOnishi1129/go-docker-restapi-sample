@@ -13,6 +13,21 @@ import (
 )
 
 /*
+ tokenよりuserIdを取得
+*/
+func GetUserIdFromToken(w http.ResponseWriter, r *http.Request) (int, error) {
+	// トークンからuserIdを取得
+	userId, err := logic.GetUserIdFromContext(r)
+	if err != nil {
+		errMessage := "認証エラー"
+		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusUnauthorized)
+		return 0, err
+	}
+
+	return userId, nil
+}
+
+/*
  ログインバリデーション処理
 */
 func ValidateSignIn(w http.ResponseWriter, signInRequestParam models.SignInRequest) error {

@@ -23,28 +23,28 @@ type DeleteTodoResponse struct {
 */
 func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-type", "application/json")
-	// トークンからuserIdを取得
-	userId, err := logic.GetUserIdFromContext(r)
-	if err != nil {
-		// レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "認証エラー",
-		}
-		responseBody, err := json.Marshal(response)
-		if err != nil {
-			log.Fatal(err)
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(responseBody)
-	}
 
+    // tokenからuserIdを所得
+    userId, err := services.GetUserIdFromToken(w,r)
+    if userId == 0 || err != nil {
+        return
+    }
+
+    // todoリスト取得処理
 	var todos []models.Todo
-    services.GetAllTodos(&todos, userId)
+    alltodo, err := services.GetAllTodos(&todos, userId)
+
+    if err != nil {
+        return
+    }
+
+    var response models.AllTodoResponse
+    response.Todos = alltodo
 
 	// レスポンスデータ作成
-	response := map[string]interface{}{
-		"todos": todos,
-	}
+	// response := map[string]interface{}{
+	// 	"todos": todos,
+	// }
     responseBody, err := json.Marshal(response)
     if err != nil {
         log.Fatal(err)
