@@ -8,6 +8,8 @@ import (
 	"myapp/utils/logic"
 	"myapp/utils/validation"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 /*
@@ -68,6 +70,22 @@ func CheckSameEmailUser(w http.ResponseWriter, users *[]models.User, email strin
 	}
 
 	return  nil
+}
+
+/*
+ パスワード照合処理
+*/
+func VerificationPassword(w http.ResponseWriter, userPassword string, requestPassword string) error {
+	// パスワード照合
+	// CompareHashAndPassword
+	// 第一引数: hash化したパスワード
+	// 第二引数: 文字列のパスワード
+	if err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(requestPassword)); err != nil {
+		errMessage := "パスワードが間違っています。"
+		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusUnauthorized)
+		return err
+	}
+	return nil
 }
 
 /*
