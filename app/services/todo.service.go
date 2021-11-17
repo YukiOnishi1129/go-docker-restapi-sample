@@ -19,19 +19,8 @@ func GetAllTodos(w http.ResponseWriter, userId int) ([]models.BaseTodoResponse, 
 		logic.SendResponse(w, logic.CreateErrorStringResponse("データ取得に失敗"), http.StatusInternalServerError)
 		return nil, err
 	}
-
 	// レスポンス用の構造体に変換
-	var responseTodos []models.BaseTodoResponse
-	for _, todo := range todos {
-		var newTodo models.BaseTodoResponse
-		newTodo.BaseModel.ID = todo.BaseModel.ID
-		newTodo.BaseModel.CreatedAt = todo.BaseModel.CreatedAt
-		newTodo.BaseModel.UpdatedAt = todo.BaseModel.UpdatedAt
-		newTodo.BaseModel.DeletedAt = todo.BaseModel.DeletedAt
-		newTodo.Title = todo.Title
-		newTodo.Comment = todo.Comment
-		responseTodos = append(responseTodos, newTodo)
-	}
+	responseTodos := logic.CreateAllTodoResponse(&todos)
 
 	return responseTodos, nil
 }
