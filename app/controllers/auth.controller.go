@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"myapp/db"
 	"myapp/models"
 	"myapp/services"
 	"myapp/utils/logic"
@@ -37,15 +36,7 @@ func singIn(w http.ResponseWriter, r *http.Request) {
 
 		// ユーザー認証
 		var user models.User
-		db := db.GetDB()
-		if err := db.Where("email=?", signInRequestParam.Email).First(&user).Error; err != nil {
-			response := map[string]interface{}{
-				"error": "メールアドレスに該当するユーザーが存在しません。",
-			}
-			responseBody, _ := json.Marshal(response)
-			w.Header().Set("Content-type", "application/json")
-			w.WriteHeader(http.StatusUnauthorized) // ステータスコード
-			w.Write(responseBody)
+		if err := services.FindUserByEmail(w, &user, signInRequestParam.Email); err != nil {
 			return
 		}
 

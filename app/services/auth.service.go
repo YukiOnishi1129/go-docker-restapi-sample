@@ -39,11 +39,25 @@ func ValidateSignUp(w http.ResponseWriter, signUpRequestParam models.SignUpReque
 }
 
 /*
+ メールアドレスに紐づくユーザーを取得
+*/
+func FindUserByEmail(w http.ResponseWriter, user *models.User, email string) error {
+	// emailに紐づくユーザーをチェック
+	if err := repositories.GetUserByEmail(user, email); err != nil {
+		errMessage := "メールアドレスに該当するユーザーが存在しません。"
+		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusUnauthorized)
+		return err
+	}
+
+	return nil
+}
+
+/*
  同じメールアドレスのユーザーがないか検証
 */
 func CheckSameEmailUser(w http.ResponseWriter, users *[]models.User, email string) error {
 	// emailに紐づくユーザーをチェック
-	if err := repositories.GetUserByEmail(users, email); err != nil {
+	if err := repositories.GetAllUserByEmail(users, email); err != nil {
 		logic.SendResponse(w, logic.CreateErrorStringResponse("DBエラー"), http.StatusInternalServerError)
 		return err
 	}
