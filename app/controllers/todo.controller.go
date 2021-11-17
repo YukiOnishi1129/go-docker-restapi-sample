@@ -22,8 +22,6 @@ type DeleteTodoResponse struct {
  Todoリスト取得
 */
 func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-type", "application/json")
-
     // tokenからuserIdを所得
     userId, err := services.GetUserIdFromToken(w,r)
     if userId == 0 || err != nil {
@@ -33,24 +31,12 @@ func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
     // todoリスト取得処理
 	var todos []models.Todo
     alltodo, err := services.GetAllTodos(&todos, userId)
-
-    if err != nil {
+    if err !=nil {
         return
     }
 
-    var response models.AllTodoResponse
-    response.Todos = alltodo
-
-	// レスポンスデータ作成
-	// response := map[string]interface{}{
-	// 	"todos": todos,
-	// }
-    responseBody, err := json.Marshal(response)
-    if err != nil {
-        log.Fatal(err)
-    }
-	w.WriteHeader(http.StatusOK) // ステータスコード
-    w.Write(responseBody)
+    // レスポンス送信処理
+    services.SendAllTodoResponse(w, &alltodo)
 }
 
 

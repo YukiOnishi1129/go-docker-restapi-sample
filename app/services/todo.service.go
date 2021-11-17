@@ -60,11 +60,11 @@ func UpdateTodo(todo *models.Todo, id string) {
 
 
 /*
- ログインAPI・会員登録APIのレスポンス送信処理
+ Todoリスト取得APIのレスポンス送信処理
 */
-func SendAllTodoResponse(w http.ResponseWriter, todos *[]models.Todo) {
+func SendAllTodoResponse(w http.ResponseWriter, todos *[]models.BaseTodoResponse) {
 	var response models.AllTodoResponse
-	// response.Todos
+	response.Todos = *todos
 	// レスポンスデータ作成
 	responseBody, _ := json.Marshal(response)
 
