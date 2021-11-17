@@ -94,65 +94,70 @@ func singIn(w http.ResponseWriter, r *http.Request) {
  会員登録処理
 */
 func signUp(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		// RequestのBodyデータを取得
-		reqBody, _ := ioutil.ReadAll(r.Body)
-		var signUpRequestParam models.SignUpRequest
-		if err := json.Unmarshal(reqBody, &signUpRequestParam); err != nil {
-			log.Fatal(err)
-		}
-
-		// バリデーション
-		if err := services.ValidateSignUp(w, signUpRequestParam); err != nil {
-			return
-		}
-
-		// 同じメールアドレスのユーザーがいないか検証
-		var users []models.User
-		if err := services.CheckSameEmailUser(w, &users, signUpRequestParam.Email); err != nil {
-			return
-		}
-
-		db := db.GetDB()
-
-		// ユーザー登録
-		hashPassword, _ := bcrypt.GenerateFromPassword([]byte(signUpRequestParam.Password), bcrypt.DefaultCost)
-		createUser := models.User {
-			Name: signUpRequestParam.Name,
-			Email: signUpRequestParam.Email,
-			Password: string(hashPassword),
-		}
-		if err := db.Create(&createUser).Error; err != nil {
-			// 新規登録処理が失敗した時
-			response := map[string]interface{}{
-				"error": err,
-			}
-			responseBody, _ := json.Marshal(response)
-			w.Header().Set("Content-type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError) // ステータスコード
-			w.Write(responseBody)
-			return
-		}
-
-		// jwtトークンを作成
-		logic.CreateJwtToken(&createUser)
-
-		// レスポンスの構造体を作る
-		response := map[string]interface{}{
-			"token": logic.GetJwtToken(),
-			"user": createUser,
-		}
-
-		// レスポンスデータ作成
-		responseBody, err := json.Marshal(response)
-		if err != nil {
-			fmt.Printf("レスポンスデータ失敗")
-			log.Fatal(err)
-		}
-		w.Header().Set("Content-type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		w.Write(responseBody)
+	// RequestのBodyデータを取得
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var signUpRequestParam models.SignUpRequest
+	if err := json.Unmarshal(reqBody, &signUpRequestParam); err != nil {
+		log.Fatal(err)
 	}
+
+	// バリデーション
+	if err := services.ValidateSignUp(w, signUpRequestParam); err != nil {
+		return
+	}
+
+	// 同じメールアドレスのユーザーがいないか検証
+	var users []models.User
+	if err := services.CheckSameEmailUser(w, &users, signUpRequestParam.Email); err != nil {
+		return
+	}
+
+	var createUser models.User
+
+	// ユーザー登録処理
+	if err := services.CreateUser(w, &createUser, signUpRequestParam); err != nil {
+		return
+	}
+
+	// db := db.GetDB()
+
+	// // ユーザー登録
+	// hashPassword, _ := bcrypt.GenerateFromPassword([]byte(signUpRequestParam.Password), bcrypt.DefaultCost)
+	// createUser := models.User {
+	// 	Name: signUpRequestParam.Name,
+	// 	Email: signUpRequestParam.Email,
+	// 	Password: string(hashPassword),
+	// }
+	// if err := db.Create(&createUser).Error; err != nil {
+	// 	// 新規登録処理が失敗した時
+	// 	response := map[string]interface{}{
+	// 		"error": err,
+	// 	}
+	// 	responseBody, _ := json.Marshal(response)
+	// 	w.Header().Set("Content-type", "application/json")
+	// 	w.WriteHeader(http.StatusInternalServerError) // ステータスコード
+	// 	w.Write(responseBody)
+	// 	return
+	// }
+
+	// jwtトークンを作成
+	logic.CreateJwtToken(&createUser)
+
+	// レスポンスの構造体を作る
+	response := map[string]interface{}{
+		"token": logic.GetJwtToken(),
+		"user": createUser,
+	}
+
+	// レスポンスデータ作成
+	responseBody, err := json.Marshal(response)
+	if err != nil {
+		fmt.Printf("レスポンスデータ失敗")
+		log.Fatal(err)
+	}
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write(responseBody)
 }
 
 func SetAuthRouting(router *mux.Router) {

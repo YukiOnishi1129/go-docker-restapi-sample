@@ -18,3 +18,15 @@ func GetUserByEmail(users *[]models.User, email string) error {
 
 	return nil
 }
+
+/*
+  ユーザーデータ新規登録
+*/
+func CreateUser(createUsers *models.User) error {
+	db := db.GetDB()
+	if err := db.Create(&createUsers).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
