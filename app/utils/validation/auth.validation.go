@@ -10,7 +10,7 @@ import (
 /*
  ログインパラメータのバリデーション
 */
-func SignInValidate(signInRequest models.SingInRequest) error {
+func SignInValidate(signInRequest models.SignInRequest) error {
 	return validation.ValidateStruct(&signInRequest,
 		validation.Field(
 			&signInRequest.Email,
