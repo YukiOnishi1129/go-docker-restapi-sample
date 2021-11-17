@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"myapp/models"
@@ -45,21 +44,8 @@ func singIn(w http.ResponseWriter, r *http.Request) {
 	// jwtトークンを作成
 	logic.CreateJwtToken(&user)
 
-	// レスポンスの構造体を作る
-	response := map[string]interface{}{
-		"token": logic.GetJwtToken(),
-		"user": user,
-	}
-
-	// レスポンスデータ作成
-	responseBody, err := json.Marshal(response)
-	if err != nil {
-		fmt.Printf("レスポンスデータ失敗")
-		log.Fatal(err)
-	}
-	w.Header().Set("Content-type", "application/json")
-	w.Write(responseBody)
-	
+	// ログインAPIのレスポンス送信
+	services.SendAuthResponse(w, &user)
 }
 
 /*
@@ -97,9 +83,12 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 	logic.CreateJwtToken(&createUser)
 
 	// 会員登録APIのレスポンス送信
-	services.SendSignUpResponse(w, &createUser)
+	services.SendAuthResponse(w, &createUser)
 }
 
+/*
+ auth controllerのルーティング設定
+*/
 func SetAuthRouting(router *mux.Router) {
 	router.HandleFunc("/signin", singIn).Methods("POST")
 	router.HandleFunc("/signup", signUp).Methods("POST")

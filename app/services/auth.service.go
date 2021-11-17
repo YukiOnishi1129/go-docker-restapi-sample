@@ -89,9 +89,9 @@ func VerificationPassword(w http.ResponseWriter, userPassword string, requestPas
 }
 
 /*
- 会員登録APIのレスポンス送信処理
+ ログインAPI・会員登録APIのレスポンス送信処理
 */
-func SendSignUpResponse(w http.ResponseWriter, createUser *models.User) {
+func SendAuthResponse(w http.ResponseWriter, createUser *models.User) {
 	var response models.SignUpResponse
 	response.Token = logic.GetJwtToken()
 	response.User.BaseModel.ID = createUser.ID
