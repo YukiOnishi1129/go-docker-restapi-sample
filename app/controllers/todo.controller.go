@@ -43,40 +43,17 @@ func fetchAllTodos(w http.ResponseWriter, r *http.Request) {
  idに紐づくTodoを取得
 */
 func fetchTodoById(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
 	// tokenからuserIdを所得
     userId, err := services.GetUserIdFromToken(w,r)
     if userId == 0 || err != nil {
         return
     }
-
-    // vars := mux.Vars(r)
-    // id := vars["id"] 
-
-    // var todo models.Todo
+    // todoデータ取得処理
     responseTodo, err := services.GetTodoById(w , r, userId)
     if err !=nil {
         return
     }
-
-    // if todo.ID == 0 {
-    //     // レスポンスデータ作成
-	// 	response := map[string]interface{}{
-	// 		"err": "データがありません。",
-	// 	}
-	// 	responseBody, _ := json.Marshal(response)
-    //     w.WriteHeader(http.StatusBadRequest)
-	// 	w.Write(responseBody)
-    //     return
-    // }
-
-    responseBody, err := json.Marshal(responseTodo)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    w.WriteHeader(http.StatusOK) // ステータスコード
-    w.Write(responseBody)
+    services.SendTodoResponse(w, &responseTodo)
 }
 
 /*

@@ -90,5 +90,17 @@ func SendAllTodoResponse(w http.ResponseWriter, todos *[]models.BaseTodoResponse
 	responseBody, _ := json.Marshal(response)
 
 	// レスポンス送信
-	logic.SendResponse(w, responseBody, http.StatusCreated)
+	logic.SendResponse(w, responseBody, http.StatusOK)
+}
+
+/*
+ Todoデータのレスポンス送信処理
+*/
+func SendTodoResponse(w http.ResponseWriter, todo *models.BaseTodoResponse) {
+	var response models.TodoResponse
+	response.Todo = *todo
+	// レスポンスデータ作成
+	responseBody, _ := json.Marshal(response)
+	// レスポンス送信
+	logic.SendResponse(w, responseBody, http.StatusOK)
 }
