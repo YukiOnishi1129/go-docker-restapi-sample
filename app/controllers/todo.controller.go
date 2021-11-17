@@ -50,24 +50,27 @@ func fetchTodoById(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    vars := mux.Vars(r)
-    id := vars["id"] 
+    // vars := mux.Vars(r)
+    // id := vars["id"] 
 
-    var todo models.Todo
-    services.GetTodoById(&todo, id, userId)
-
-    if todo.ID == 0 {
-        // レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "データがありません。",
-		}
-		responseBody, _ := json.Marshal(response)
-        w.WriteHeader(http.StatusBadRequest)
-		w.Write(responseBody)
+    // var todo models.Todo
+    responseTodo, err := services.GetTodoById(w , r, userId)
+    if err !=nil {
         return
     }
 
-    responseBody, err := json.Marshal(todo)
+    // if todo.ID == 0 {
+    //     // レスポンスデータ作成
+	// 	response := map[string]interface{}{
+	// 		"err": "データがありません。",
+	// 	}
+	// 	responseBody, _ := json.Marshal(response)
+    //     w.WriteHeader(http.StatusBadRequest)
+	// 	w.Write(responseBody)
+    //     return
+    // }
+
+    responseBody, err := json.Marshal(responseTodo)
     if err != nil {
         log.Fatal(err)
     }
@@ -158,20 +161,20 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
-    var todo models.Todo
+    // var todo models.Todo
 
     // 削除データの確認
-    services.GetTodoById(&todo, id, userId)
-    if todo.ID == 0 {
-        // レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "データがありません。",
-		}
-		responseBody, _ := json.Marshal(response)
-        w.WriteHeader(http.StatusBadRequest)
-		w.Write(responseBody)
-        return
-    }
+    // services.GetTodoById(&todo, id, userId)
+    // if todo.ID == 0 {
+    //     // レスポンスデータ作成
+	// 	response := map[string]interface{}{
+	// 		"err": "データがありません。",
+	// 	}
+	// 	responseBody, _ := json.Marshal(response)
+    //     w.WriteHeader(http.StatusBadRequest)
+	// 	w.Write(responseBody)
+    //     return
+    // }
 
     services.DeleteTodo(id, userId)
     // responseBody, err := json.Marshal(DeleteResponse{Id: id})
@@ -237,17 +240,17 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
     updateTodo.UserId = userId
 
     // 更新データの有無確認
-    services.GetTodoById(&todo, id, userId)
-    if todo.ID == 0 {
-        // レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "データがありません。",
-		}
-		responseBody, _ := json.Marshal(response)
-        w.WriteHeader(http.StatusBadRequest)
-		w.Write(responseBody)
-        return
-    }
+    // services.GetTodoById(&todo, id, userId)
+    // if todo.ID == 0 {
+    //     // レスポンスデータ作成
+	// 	response := map[string]interface{}{
+	// 		"err": "データがありません。",
+	// 	}
+	// 	responseBody, _ := json.Marshal(response)
+    //     w.WriteHeader(http.StatusBadRequest)
+	// 	w.Write(responseBody)
+    //     return
+    // }
 
     // データ更新
     services.UpdateTodo(&updateTodo, id)

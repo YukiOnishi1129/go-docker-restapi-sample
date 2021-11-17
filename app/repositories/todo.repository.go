@@ -20,7 +20,7 @@ func GetAllTodos(todo *[]models.Todo, userId int) error {
 /*
   Idに紐づくTodoデータを取得
 */
-func GetTodoById(todo *[]models.Todo, id string, userId int) error {
+func GetTodoById(todo *models.Todo, id string, userId int) error {
 	db := db.GetDB()
 	if err := db.Joins("User").Where("user_id=?", userId).First(&todo, id).Error; err != nil {
 		return err

@@ -2,15 +2,19 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"myapp/db"
 	"myapp/models"
 	"myapp/repositories"
 	"myapp/utils/logic"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
 
 /*
- Todoリストを取得しレスポンス用に変換
+ Todoリストを取得
 */
 func GetAllTodos(w http.ResponseWriter, userId int) ([]models.BaseTodoResponse, error) {
 	var todos []models.Todo
@@ -25,9 +29,34 @@ func GetAllTodos(w http.ResponseWriter, userId int) ([]models.BaseTodoResponse, 
 	return responseTodos, nil
 }
 
-func GetTodoById(todo *models.Todo, id string, userId int) {
-	db := db.GetDB()
-	db.Joins("User").Where("user_id=?", userId).First(&todo, id)
+/*
+ IDに紐づくTodoを取得
+*/
+func GetTodoById(w http.ResponseWriter,r *http.Request, userId int) (models.BaseTodoResponse, error) {
+	// getパラメータからIDを取得
+	vars := mux.Vars(r)
+    id := vars["id"]
+	var todo models.Todo
+	// todoデータ取得処理
+	if err := repositories.GetTodoById(&todo, id, userId); err != nil {
+		var errMessage string
+		var statusCode int
+		// https://gorm.io/ja_JP/docs/error_handling.html
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			statusCode = http.StatusBadRequest
+			errMessage = "該当データは存在しません。"
+		} else {
+			statusCode = http.StatusInternalServerError
+			errMessage = "データ取得に失敗しました。"
+		}
+		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), statusCode)
+		return models.BaseTodoResponse{}, err
+	}
+
+	// レスポンス用の構造体に変換
+	responseTodos := logic.CreateTodoResponse(&todo)
+
+	return responseTodos, nil
 }
 
 func InsertTodo(todo *models.Todo) {

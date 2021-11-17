@@ -20,3 +20,18 @@ func CreateAllTodoResponse(todos *[]models.Todo) []models.BaseTodoResponse {
 
 	return responseTodos
 }
+
+/*
+ レスポンス用のTodoの構造体を作成
+*/
+func CreateTodoResponse(todo *models.Todo) models.BaseTodoResponse {
+	var responseTodo models.BaseTodoResponse
+	responseTodo.BaseModel.ID = todo.BaseModel.ID
+	responseTodo.BaseModel.CreatedAt = todo.BaseModel.CreatedAt
+	responseTodo.BaseModel.UpdatedAt = todo.BaseModel.UpdatedAt
+	responseTodo.BaseModel.DeletedAt = todo.BaseModel.DeletedAt
+	responseTodo.Title = todo.Title
+	responseTodo.Comment = todo.Comment
+
+	return responseTodo
+}
