@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"myapp/models"
 	"myapp/repositories"
@@ -39,4 +40,23 @@ func CheckSameEmailUser(w http.ResponseWriter, users *[]models.User, email strin
 	}
 
 	return  nil
+}
+
+/*
+ 会員登録APIのレスポンス送信処理
+*/
+func SendSignUpResponse(w http.ResponseWriter, createUser *models.User) {
+	var response models.SignUpResponse
+	response.Token = logic.GetJwtToken()
+	response.User.BaseModel.ID = createUser.ID
+	response.User.BaseModel.CreatedAt = createUser.CreatedAt
+	response.User.BaseModel.UpdatedAt = createUser.UpdatedAt
+	response.User.BaseModel.DeletedAt = createUser.DeletedAt
+	response.User.Name = createUser.Name
+	response.User.Email = createUser.Email
+	// レスポンスデータ作成
+	responseBody, _ := json.Marshal(response)
+
+	// レスポンス送信
+	logic.SendResponse(w, responseBody, http.StatusCreated)
 }
