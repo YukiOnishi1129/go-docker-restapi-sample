@@ -7,6 +7,7 @@ import (
 	"myapp/models"
 	"myapp/services"
 	"myapp/utils/logic"
+	"myapp/utils/validation"
 	"net/http"
 	"strconv"
 
@@ -120,6 +121,22 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 	}
     // ioutil: ioに特化したパッケージ
     reqBody,_ := ioutil.ReadAll(r.Body)
+
+    // バリデーション
+    var mutationTodoRequest models.MutationTodoRequest
+    if err := json.Unmarshal(reqBody, &mutationTodoRequest); err != nil {
+        log.Fatal(err)
+    }
+    if err := validation.MutationTodoValidate(mutationTodoRequest); err != nil {
+        response := map[string]interface{}{
+            "error": err,
+        }
+        responseBody, _ := json.Marshal(response)
+        w.WriteHeader(http.StatusBadRequest) // ステータスコード
+        w.Write(responseBody)
+        return
+    }
+
     var todo models.Todo
     // json.Unmarshal()
     // 第１引数で与えたjsonデータを、第二引数に指定した値にマッピングする
@@ -160,6 +177,7 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write(responseBody)
+        return
 	}
     vars := mux.Vars(r)
     id := vars["id"]
@@ -214,10 +232,27 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
     id := vars["id"]
 
     reqBody, _ := ioutil.ReadAll(r.Body)
+    // バリデーション
+    var mutationTodoRequest models.MutationTodoRequest
+    if err := json.Unmarshal(reqBody, &mutationTodoRequest); err != nil {
+        log.Fatal(err)
+    }
+    if err := validation.MutationTodoValidate(mutationTodoRequest); err != nil {
+        response := map[string]interface{}{
+            "error": err,
+        }
+        responseBody, _ := json.Marshal(response)
+        w.WriteHeader(http.StatusBadRequest) // ステータスコード
+        w.Write(responseBody)
+        return
+    }
+
+    // 更新データの有無確認用
     var todo models.Todo
     if err := json.Unmarshal(reqBody, &todo); err != nil {
         log.Fatal(err)
     }
+    // データ更新処理用
     var updateTodo models.Todo
     if err := json.Unmarshal(reqBody, &updateTodo); err != nil {
         log.Fatal(err)
@@ -225,7 +260,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 
     updateTodo.UserId = userId
 
-    // 更新データの確認
+    // 更新データの有無確認
     services.GetTodoById(&todo, id, userId)
     if todo.ID == 0 {
         // レスポンスデータ作成
@@ -243,7 +278,10 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
     convertUnitId, _ := strconv.ParseUint(id, 10, 64)
     updateTodo.BaseModel.ID = uint(convertUnitId)
 
-    responseBody, err := json.Marshal(updateTodo)
+    response := map[string]interface{}{
+        "todo": updateTodo,
+    }
+    responseBody, err := json.Marshal(response)
     if err != nil {
         log.Fatal(err)
     }

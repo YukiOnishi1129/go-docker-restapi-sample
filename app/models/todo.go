@@ -7,3 +7,8 @@ type Todo struct {
 	UserId    int `gorm:"not null" json:"user_id"`
 	User      User `gorm:"foreignKey:UserId"`
 }
+
+type MutationTodoRequest struct {
+	Title     string `json:"title,omitempty"`
+	Comment   string `json:"comment,omitempty"`
+}
