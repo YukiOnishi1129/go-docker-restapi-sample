@@ -29,10 +29,19 @@ func GetTodoById(todo *models.Todo, id string, userId int) error {
 	return nil
 }
 
+func GetTodoLastByUserId(todo *models.Todo, userId int) error {
+	db := db.GetDB()
+	if err := db.Joins("User").Where("user_id=?", userId).Last(&todo).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 /*
  Todo新規登録
 */
-func InsertTodo(todo *models.Todo) error {
+func CreateTodo(todo *models.Todo) error {
 	db := db.GetDB()
 	if err := db.Create(&todo).Error; err != nil {
 		return err

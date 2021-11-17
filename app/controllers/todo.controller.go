@@ -53,6 +53,8 @@ func fetchTodoById(w http.ResponseWriter, r *http.Request) {
     if err !=nil {
         return
     }
+
+    // レスポンス送信処理
     services.SendTodoResponse(w, &responseTodo)
 }
 
@@ -60,59 +62,20 @@ func fetchTodoById(w http.ResponseWriter, r *http.Request) {
  Todo新規登録
 */
 func createTodo(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-type", "application/json")
     // トークンからuserIdを取得
-	userId, err := logic.GetUserIdFromContext(r)
-	if err != nil {
-		// レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "認証エラー",
-		}
-		responseBody, err := json.Marshal(response)
-		if err != nil {
-			log.Fatal(err)
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(responseBody)
-	}
-    // ioutil: ioに特化したパッケージ
-    reqBody,_ := ioutil.ReadAll(r.Body)
-
-    // バリデーション
-    var mutationTodoRequest models.MutationTodoRequest
-    if err := json.Unmarshal(reqBody, &mutationTodoRequest); err != nil {
-        log.Fatal(err)
-    }
-    if err := validation.MutationTodoValidate(mutationTodoRequest); err != nil {
-        response := map[string]interface{}{
-            "error": err,
-        }
-        responseBody, _ := json.Marshal(response)
-        w.WriteHeader(http.StatusBadRequest) // ステータスコード
-        w.Write(responseBody)
+	userId, err := services.GetUserIdFromToken(w,r)
+    if userId == 0 || err != nil {
         return
     }
 
-    var todo models.Todo
-    // json.Unmarshal()
-    // 第１引数で与えたjsonデータを、第二引数に指定した値にマッピングする
-    // 返り値はerrorで、エラーが発生しない場合はnilになる
-    if err := json.Unmarshal(reqBody, &todo); err != nil {
-        log.Fatal(err)
+    // todoデータ取得処理
+    responseTodo, err := services.CreateTodo(w , r, userId)
+    if err !=nil {
+        return
     }
 
-    todo.UserId = userId
-
-    services.InsertTodo(&todo)
-
-    responseBody, err := json.Marshal(todo)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusCreated)
-    w.Write(responseBody)
+    // レスポンス送信処理
+    services.SendTodoResponse(w, &responseTodo)
 }
 
 /*
