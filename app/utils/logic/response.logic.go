@@ -26,3 +26,15 @@ func CreateErrorResponse(err error) []byte {
 	return responseBody
 }
 
+/*
+ エラーレスポンス作成 (エラーメッセージはstring)
+*/
+func CreateErrorStringResponse(errMessage string) []byte {
+	response := map[string]interface{}{
+		"error": errMessage,
+	}
+	responseBody, _ := json.Marshal(response)
+
+	return responseBody
+}
+

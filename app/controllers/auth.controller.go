@@ -103,33 +103,17 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// バリデーション
-		if err := services.SignUpValidation(w, signUpRequestParam); err != nil {
+		if err := services.ValidateSignUp(w, signUpRequestParam); err != nil {
 			return
 		}
-		// if err := validation.SignUpValidate(signUpRequestParam); err != nil {
-		// 	responseBody := logic.CreateErrorResponse(err)
-		// 	w.Header().Set("Content-type", "application/json")
-		// 	w.WriteHeader(http.StatusBadRequest) // ステータスコード
-		// 	w.Write(responseBody)
-		// 	return
-		// }
 
 		// 同じメールアドレスのユーザーがいないか検証
 		var users []models.User
-		db := db.GetDB()
-		db.Where("email=?", signUpRequestParam.Email).Find(&users)
-
-		// メールアドレスに合致するユーザーがいる場合
-		if len(users) != 0 {
-			response := map[string]interface{}{
-				"error": "入力されたメールアドレスは既に登録されています。",
-			}
-			responseBody, _ := json.Marshal(response)
-			w.Header().Set("Content-type", "application/json")
-			w.WriteHeader(http.StatusUnauthorized) // ステータスコード
-			w.Write(responseBody)
+		if err := services.CheckSameEmailUser(w, &users, signUpRequestParam.Email); err != nil {
 			return
 		}
+
+		db := db.GetDB()
 
 		// ユーザー登録
 		hashPassword, _ := bcrypt.GenerateFromPassword([]byte(signUpRequestParam.Password), bcrypt.DefaultCost)
