@@ -6,7 +6,9 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-
+/*
+ Todo新規登録、更新時のリクエストパラメータのバリデーション
+*/
 func MutationTodoValidate(mutationTodoRequest models.MutationTodoRequest) error {
 	return validation.ValidateStruct(&mutationTodoRequest,
 		validation.Field(

@@ -16,5 +16,5 @@ func rootPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetAppRouting(router *mux.Router) {
-	router.HandleFunc("/", rootPage).Methods("GET")
+	router.HandleFunc("/api/v1", rootPage).Methods("GET")
 }

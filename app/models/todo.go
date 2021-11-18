@@ -12,3 +12,17 @@ type MutationTodoRequest struct {
 	Title     string `json:"title,omitempty"`
 	Comment   string `json:"comment,omitempty"`
 }
+
+type BaseTodoResponse struct {
+	BaseModel
+	Title     string `gorm:"size:255" json:"title,omitempty"`
+	Comment   string `gorm:"type:text" json:"comment,omitempty"`
+}
+
+type TodoResponse struct {
+	Todo BaseTodoResponse `json:"todo"`
+}
+
+type AllTodoResponse struct {
+	Todos []BaseTodoResponse `json:"todos"`
+}

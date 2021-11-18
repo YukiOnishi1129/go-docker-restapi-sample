@@ -23,7 +23,7 @@ type UserResponse struct {
 	Email  string `gorm:"size:255;not null;unique" json:"email,omitempty"`
 }
 
-type SignUpResponse struct {
+type AuthResponse struct {
 	Token string `json:"token"`
-	User UserResponse
+	User UserResponse `json:"user"`
 }
