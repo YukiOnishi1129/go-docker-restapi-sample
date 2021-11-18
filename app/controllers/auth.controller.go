@@ -16,33 +16,11 @@ import (
  ログイン処理
 */
 func singIn(w http.ResponseWriter, r *http.Request) {
-	// RequestのBodyデータを取得
-	reqBody, _ := ioutil.ReadAll(r.Body)
-	var signInRequestParam models.SignInRequest
-	// Unmarshal: jsonを構造体に変換
-	if err := json.Unmarshal(reqBody, &signInRequestParam); err != nil {
-		log.Fatal(err)
-		errMessage := "リクエストパラメータを構造体へ変換処理でエラー発生"
-		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusInternalServerError)
-	}
-
-	// バリデーション
-	if err := services.ValidateSignIn(w, signInRequestParam); err != nil {
+	// ログイン処理
+	user, err := services.SignIn(w, r);
+	if err != nil {
 		return
 	}
-
-	// ユーザー認証
-	var user models.User
-	if err := services.FindUserByEmail(w, &user, signInRequestParam.Email); err != nil {
-		return
-	}
-
-	if err := services.VerificationPassword(w, user.Password, signInRequestParam.Password); err != nil {
-		return
-	}
-
-	// jwtトークンを作成
-	logic.CreateJwtToken(&user)
 
 	// ログインAPIのレスポンス送信
 	services.SendAuthResponse(w, &user)

@@ -3,6 +3,8 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"myapp/models"
 	"myapp/repositories"
 	"myapp/utils/logic"
@@ -28,20 +30,6 @@ func GetUserIdFromToken(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 
 /*
- ログインバリデーション処理
-*/
-func ValidateSignIn(w http.ResponseWriter, signInRequestParam models.SignInRequest) error {
-	// バリデーション
-	if err := validation.SignInValidate(signInRequestParam); err != nil {
-		// バリデーションエラーのレスポンスを送信
-		logic.SendResponse(w, logic.CreateErrorResponse(err), http.StatusBadRequest)
-		return err
-	}
-
-	return nil
-}
-
-/*
  会員登録バリデーション処理
 */
 func ValidateSignUp(w http.ResponseWriter, signUpRequestParam models.SignUpRequest) error {
@@ -49,20 +37,6 @@ func ValidateSignUp(w http.ResponseWriter, signUpRequestParam models.SignUpReque
 	if err := validation.SignUpValidate(signUpRequestParam); err != nil {
 		// バリデーションエラーのレスポンスを送信
 		logic.SendResponse(w, logic.CreateErrorResponse(err), http.StatusBadRequest)
-		return err
-	}
-
-	return nil
-}
-
-/*
- メールアドレスに紐づくユーザーを取得
-*/
-func FindUserByEmail(w http.ResponseWriter, user *models.User, email string) error {
-	// emailに紐づくユーザーをチェック
-	if err := repositories.GetUserByEmail(user, email); err != nil {
-		errMessage := "メールアドレスに該当するユーザーが存在しません。"
-		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusUnauthorized)
 		return err
 	}
 
@@ -88,19 +62,49 @@ func CheckSameEmailUser(w http.ResponseWriter, users *[]models.User, email strin
 }
 
 /*
- パスワード照合処理
+ ログイン処理
 */
-func VerificationPassword(w http.ResponseWriter, userPassword string, requestPassword string) error {
+func SignIn(w http.ResponseWriter, r *http.Request) (models.User, error) {
+	// RequestのBodyデータを取得
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var signInRequestParam models.SignInRequest
+	// Unmarshal: jsonを構造体に変換
+	if err := json.Unmarshal(reqBody, &signInRequestParam); err != nil {
+		log.Fatal(err)
+		errMessage := "リクエストパラメータを構造体へ変換処理でエラー発生"
+		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusInternalServerError)
+		return models.User{}, err
+	}
+
+	// バリデーション
+	if err := validation.SignInValidate(signInRequestParam); err != nil {
+		// バリデーションエラーのレスポンスを送信
+		logic.SendResponse(w, logic.CreateErrorResponse(err), http.StatusBadRequest)
+		return models.User{}, err
+	}
+
+	// ユーザー認証
+	var user models.User
+	// emailに紐づくユーザーをチェック
+	if err := repositories.GetUserByEmail(&user, signInRequestParam.Email); err != nil {
+		errMessage := "メールアドレスに該当するユーザーが存在しません。"
+		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusUnauthorized)
+		return models.User{}, err
+	}
 	// パスワード照合
 	// CompareHashAndPassword
 	// 第一引数: hash化したパスワード
 	// 第二引数: 文字列のパスワード
-	if err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(requestPassword)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(signInRequestParam.Password)); err != nil {
 		errMessage := "パスワードが間違っています。"
 		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), http.StatusUnauthorized)
-		return err
+		return models.User{}, err
 	}
-	return nil
+
+	// jwtトークンを作成
+	logic.CreateJwtToken(&user)
+
+	return user, nil
 }
 
 /*
