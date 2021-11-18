@@ -3,6 +3,8 @@ package repositories
 import (
 	"myapp/db"
 	"myapp/models"
+
+	"github.com/pkg/errors"
 )
 
 /*
@@ -58,8 +60,12 @@ func CreateTodo(todo *models.Todo) error {
 */
 func DeleteTodo(id string, userId int) error {
 	db := db.GetDB()
-	if err := db.Where("id=? AND user_id=?", id, userId).Delete(&models.Todo{}).Error; err != nil {
-		return err
+	db.Where("id=? AND user_id=?", id, userId).Delete(&models.Todo{})
+	// https://stackoverflow.com/questions/67154864/how-to-handle-gorm-error-at-delete-function
+	if db.Error != nil {
+		return db.Error
+	} else if db.RowsAffected < 1 {
+		return errors.Errorf("row with id=%w のTodoデータが存在しません。", id)
 	}
 
 	return nil
@@ -68,13 +74,12 @@ func DeleteTodo(id string, userId int) error {
 /*
  Todo更新処理
 */
-func UpdateTodo(todo *models.Todo, id string) error {
+func UpdateTodo(todo *models.Todo, id string, userId int) error {
 	db := db.GetDB()
-	if err := db.Model(&todo).Where("id=? AND user_id=?", id, todo.UserId).Updates(
+	if err := db.Model(&todo).Where("id=? AND user_id=?", id, userId).Updates(
         map[string]interface{}{
             "title":     todo.Title,
             "comment":    todo.Comment,
-			"user_id": todo.UserId,
         }).Error; err != nil {
 			return err
 		}

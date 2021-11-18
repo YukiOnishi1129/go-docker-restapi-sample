@@ -1,15 +1,10 @@
 package controllers
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"log"
-	"myapp/models"
 	"myapp/services"
 	"myapp/utils/logic"
-	"myapp/utils/validation"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -102,82 +97,20 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
  Todo更新処理
 */
 func updateTodo(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-type", "application/json")
-    // トークンからuserIdを取得
-	userId, err := logic.GetUserIdFromContext(r)
-	if err != nil {
-		// レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "認証エラー",
-		}
-		responseBody, err := json.Marshal(response)
-		if err != nil {
-			log.Fatal(err)
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(responseBody)
-	}
-
-    vars := mux.Vars(r)
-    id := vars["id"]
-
-    reqBody, _ := ioutil.ReadAll(r.Body)
-    // バリデーション
-    var mutationTodoRequest models.MutationTodoRequest
-    if err := json.Unmarshal(reqBody, &mutationTodoRequest); err != nil {
-        log.Fatal(err)
-    }
-    if err := validation.MutationTodoValidate(mutationTodoRequest); err != nil {
-        response := map[string]interface{}{
-            "error": err,
-        }
-        responseBody, _ := json.Marshal(response)
-        w.WriteHeader(http.StatusBadRequest) // ステータスコード
-        w.Write(responseBody)
+	// tokenからuserIdを所得
+    userId, err := services.GetUserIdFromToken(w,r)
+    if userId == 0 || err != nil {
         return
     }
 
-    // 更新データの有無確認用
-    var todo models.Todo
-    if err := json.Unmarshal(reqBody, &todo); err != nil {
-        log.Fatal(err)
-    }
-    // データ更新処理用
-    var updateTodo models.Todo
-    if err := json.Unmarshal(reqBody, &updateTodo); err != nil {
-        log.Fatal(err)
+    // todo更新処理
+    responseTodo, err := services.UpdateTodo(w , r, userId)
+    if err !=nil {
+        return
     }
 
-    updateTodo.UserId = userId
-
-    // 更新データの有無確認
-    // services.GetTodoById(&todo, id, userId)
-    // if todo.ID == 0 {
-    //     // レスポンスデータ作成
-	// 	response := map[string]interface{}{
-	// 		"err": "データがありません。",
-	// 	}
-	// 	responseBody, _ := json.Marshal(response)
-    //     w.WriteHeader(http.StatusBadRequest)
-	// 	w.Write(responseBody)
-    //     return
-    // }
-
-    // データ更新
-    services.UpdateTodo(&updateTodo, id)
-    convertUnitId, _ := strconv.ParseUint(id, 10, 64)
-    updateTodo.BaseModel.ID = uint(convertUnitId)
-
-    response := map[string]interface{}{
-        "todo": updateTodo,
-    }
-    responseBody, err := json.Marshal(response)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    w.WriteHeader(http.StatusOK) // ステータスコード
-    w.Write(responseBody)
+    // レスポンス送信処理
+    services.SendCreateTodoResponse(w, &responseTodo)
 }
 
 
