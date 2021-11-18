@@ -9,10 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type DeleteTodoResponse struct {
-    Id string `json:"id"`
-}
-
 /*
  Todoリスト取得
 */
