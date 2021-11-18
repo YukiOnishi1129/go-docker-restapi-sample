@@ -39,6 +39,6 @@ func signUp(w http.ResponseWriter, r *http.Request) {
  auth controllerのルーティング設定
 */
 func SetAuthRouting(router *mux.Router) {
-	router.HandleFunc("/signin", singIn).Methods("POST")
-	router.HandleFunc("/signup", signUp).Methods("POST")
+	router.HandleFunc("/api/v1/signin", singIn).Methods("POST")
+	router.HandleFunc("/api/v1/signup", signUp).Methods("POST")
 }

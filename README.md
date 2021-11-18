@@ -91,7 +91,7 @@ go run main.go
 ```
 
 - 以下の url に接続し、レスポンスが返ってくる事を確認
-  - http://localhost:4000
+  - http://localhost:4000/api/v1
 
 ## docker コマンド
 
