@@ -75,56 +75,27 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
     }
 
     // レスポンス送信処理
-    services.SendTodoResponse(w, &responseTodo)
+    services.SendCreateTodoResponse(w, &responseTodo)
 }
 
 /*
  削除処理
 */
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-     // トークンからuserIdを取得
-	userId, err := logic.GetUserIdFromContext(r)
-	if err != nil {
-		// レスポンスデータ作成
-		response := map[string]interface{}{
-			"err": "認証エラー",
-		}
-		responseBody, err := json.Marshal(response)
-		if err != nil {
-			log.Fatal(err)
-		}
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(responseBody)
+    // トークンからuserIdを取得
+    userId, err := services.GetUserIdFromToken(w,r)
+    if userId == 0 || err != nil {
         return
-	}
-    vars := mux.Vars(r)
-    id := vars["id"]
+    }
 
-    // var todo models.Todo
+    // データ削除処理
+    if err := services.DeleteTodo(w, r, userId); err != nil {
+        return
+    }
 
-    // 削除データの確認
-    // services.GetTodoById(&todo, id, userId)
-    // if todo.ID == 0 {
-    //     // レスポンスデータ作成
-	// 	response := map[string]interface{}{
-	// 		"err": "データがありません。",
-	// 	}
-	// 	responseBody, _ := json.Marshal(response)
-    //     w.WriteHeader(http.StatusBadRequest)
-	// 	w.Write(responseBody)
-    //     return
-    // }
-
-    services.DeleteTodo(id, userId)
-    // responseBody, err := json.Marshal(DeleteResponse{Id: id})
-    // responseBody, err := json.Marshal(todo)
-    // if err != nil {
-    //     log.Fatal(err)
-    // }
-
-    w.WriteHeader(http.StatusNoContent)
-    // w.Write(responseBody)
+    // レスポンス送信処理
+    services.SendDeleteTodoResponse(w)
+    log.Fatal(err)
 }
 
 /*

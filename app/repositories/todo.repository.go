@@ -29,6 +29,9 @@ func GetTodoById(todo *models.Todo, id string, userId int) error {
 	return nil
 }
 
+/*
+ 新規登録したTodoデータを取得
+*/
 func GetTodoLastByUserId(todo *models.Todo, userId int) error {
 	db := db.GetDB()
 	if err := db.Joins("User").Where("user_id=?", userId).Last(&todo).Error; err != nil {

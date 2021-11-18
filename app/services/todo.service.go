@@ -52,6 +52,7 @@ func GetTodoById(w http.ResponseWriter, r *http.Request, userId int) (models.Bas
 			statusCode = http.StatusInternalServerError
 			errMessage = "データ取得に失敗しました。"
 		}
+		// エラーレスポンス送信
 		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), statusCode)
 		return models.BaseTodoResponse{}, err
 	}
@@ -86,11 +87,13 @@ func CreateTodo(w http.ResponseWriter, r *http.Request, userId int) (models.Base
     todo.Title = mutationTodoRequest.Title
     todo.Comment = mutationTodoRequest.Comment
     todo.UserId = userId
+
 	// todoデータ新規登録処理
 	if err := repositories.CreateTodo(&todo); err != nil {
 		logic.SendResponse(w, logic.CreateErrorStringResponse("データ取得に失敗しました。"), http.StatusInternalServerError)
 		return models.BaseTodoResponse{}, err
 	}
+	
 	// 登録したtodoデータ取得処理
 	if err := repositories.GetTodoLastByUserId(&todo, userId); err != nil {
 		var errMessage string
@@ -103,6 +106,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request, userId int) (models.Base
 			statusCode = http.StatusInternalServerError
 			errMessage = "データ取得に失敗しました。"
 		}
+		// エラーレスポンス送信
 		logic.SendResponse(w, logic.CreateErrorStringResponse(errMessage), statusCode)
 		return models.BaseTodoResponse{}, err
 	}
@@ -113,9 +117,19 @@ func CreateTodo(w http.ResponseWriter, r *http.Request, userId int) (models.Base
 	return responseTodos, nil
 }
 
-func DeleteTodo(id string, userId int) {
-	db := db.GetDB()
-	db.Where("id=? AND user_id=?", id, userId).Delete(&models.Todo{})
+/*
+ Todo削除処理
+*/
+func DeleteTodo(w http.ResponseWriter, r *http.Request, userId int) error {
+	// getパラメータからIDを取得
+	vars := mux.Vars(r)
+    id := vars["id"]
+	// データ削除処理
+	if err := repositories.DeleteTodo(id, userId); err != nil {
+		logic.SendResponse(w, logic.CreateErrorStringResponse("データ取得に失敗"), http.StatusInternalServerError)
+		return err
+	}
+	return nil
 }
 
 func UpdateTodo(todo *models.Todo, id string) {
@@ -152,4 +166,24 @@ func SendTodoResponse(w http.ResponseWriter, todo *models.BaseTodoResponse) {
 	responseBody, _ := json.Marshal(response)
 	// レスポンス送信
 	logic.SendResponse(w, responseBody, http.StatusOK)
+}
+
+/*
+ CreateTodoAPIのレスポンス送信処理
+*/
+func SendCreateTodoResponse(w http.ResponseWriter, todo *models.BaseTodoResponse) {
+	var response models.TodoResponse
+	response.Todo = *todo
+	// レスポンスデータ作成
+	responseBody, _ := json.Marshal(response)
+	// レスポンス送信
+	logic.SendResponse(w, responseBody, http.StatusCreated)
+}
+
+/*
+ DeleteTodoAPIのレスポンス送信処理
+*/
+func SendDeleteTodoResponse(w http.ResponseWriter) {
+	// レスポンス送信
+	logic.SendNotBodyResponse(w)
 }

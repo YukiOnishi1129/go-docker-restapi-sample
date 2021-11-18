@@ -15,6 +15,14 @@ func SendResponse(w http.ResponseWriter, response []byte, code int) {
 }
 
 /*
+ APIレスポンス送信処理 (レスポンスBodyなし)
+*/
+func SendNotBodyResponse(w http.ResponseWriter) {
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
+}
+
+/*
  エラーレスポンス作成
 */
 func CreateErrorResponse(err error) []byte {
