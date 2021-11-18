@@ -69,9 +69,6 @@ func SignIn(w http.ResponseWriter, r *http.Request) (models.User, error) {
 		return models.User{}, err
 	}
 
-	// jwtトークンを作成
-	logic.CreateJwtToken(&user)
-
 	return user, nil
 }
 
@@ -120,9 +117,6 @@ func SignUp(w http.ResponseWriter, r *http.Request) (models.User, error) {
 		return models.User{}, err
 	}
 
-	// jwtトークンを作成
-	logic.CreateJwtToken(&createUser)
-
 	return createUser, nil
 }
 
@@ -130,15 +124,23 @@ func SignUp(w http.ResponseWriter, r *http.Request) (models.User, error) {
  ログインAPI・会員登録APIのレスポンス送信処理
 */
 func SendAuthResponse(w http.ResponseWriter, user *models.User, code int) {
+	// jwtトークンを作成
+	token, err := logic.CreateJwtToken(user)
+	if err != nil {
+		logic.SendResponse(w, logic.CreateErrorStringResponse("トークン作成に失敗"), http.StatusInternalServerError)
+		return
+	}
+	// レスポンスデータ作成
 	var response models.AuthResponse
-	response.Token = logic.GetJwtToken()
+	response.Token = token
 	response.User.BaseModel.ID = user.ID
 	response.User.BaseModel.CreatedAt = user.CreatedAt
 	response.User.BaseModel.UpdatedAt = user.UpdatedAt
 	response.User.BaseModel.DeletedAt = user.DeletedAt
 	response.User.Name = user.Name
 	response.User.Email = user.Email
-	// レスポンスデータ作成
+
+	// レスポンスデータをjson形式に変換
 	responseBody, _ := json.Marshal(response)
 
 	// レスポンス送信

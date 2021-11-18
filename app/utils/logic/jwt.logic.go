@@ -17,7 +17,7 @@ var JwtToken string
 /*
  jwtトークンの新規作成
 */
-func CreateJwtToken(user *models.User)  {
+func CreateJwtToken(user *models.User) (string, error) {
 	// headerのセット
 	token := jwt.New(jwt.SigningMethodHS256)
 	// claimsのセット
@@ -38,19 +38,12 @@ func CreateJwtToken(user *models.User)  {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println(err)
-		return
+		return "", err
 	}
 	// 電子署名
 	tokenString, _ := token.SignedString([]byte(os.Getenv("JWT_KEY")))
 
-	JwtToken = tokenString
-}
-
-/*
- jwtトークンを取得
-*/
-func GetJwtToken() string {
-	return JwtToken
+	return tokenString, nil
 }
 
 /*
