@@ -2,6 +2,79 @@
 
 golang docker REST API のサンプル
 
+## 環境構築
+
+### 1. env ファイルを作成
+
+- ルートディレクトリ直下に「.env」ファイルを作成
+- 「.env.sample」の記述をコピー
+
+```
+touch .env
+```
+
+- app ディレクトリに移動し、「.env」ファイルを作成
+- 「app/.env.sample」ファイルの記述をコピー
+
+```
+cd app
+touch .env
+```
+
+### 2. docker 起動
+
+- ビルド
+
+```
+docker-compose build
+```
+
+- コンテナ起動
+
+```
+docker-compose up
+```
+
+- go のコンテナにアクセス
+
+```
+docker exec -it 20211105_go_rest_server sh
+```
+
+### 3. データ用意
+
+- マイグレーションを実行
+- go のコンテナ内で、以下コマンドを実行する
+
+```
+go run db/migrate/migrate.go
+```
+
+- テーブルが作成されるので、DB(MySQL)に接続し確認する
+
+  - 接続アプリは「Sequel Ace」がおすすめ
+  - https://qiita.com/ucan-lab/items/b1304eee2157dbef7774
+
+- シーディングを実行
+- go のコンテナ内で、以下コマンドを実行する
+
+```
+go run db/seeds/seed.go
+```
+
+- データが作成されるので、DB(MySQL)に接続し確認する
+
+### 4. API 起動
+
+- go のコンテナ内で以下のコマンドを実行し、API を起動する
+
+```
+go run main.go
+```
+
+- 以下の url に接続し、レスポンスが返ってくる事を確認
+  - http://localhost:4000
+
 ## docker コマンド
 
 ```
