@@ -65,7 +65,7 @@ func DeleteTodo(id string, userId int) error {
 	if db.Error != nil {
 		return db.Error
 	} else if db.RowsAffected < 1 {
-		return errors.Errorf("row with id=%w のTodoデータが存在しません。", id)
+		return errors.Errorf("id=%w のTodoデータが存在しません。", id)
 	}
 
 	return nil
