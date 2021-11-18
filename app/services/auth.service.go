@@ -130,7 +130,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) (models.User, error) {
  ログインAPI・会員登録APIのレスポンス送信処理
 */
 func SendAuthResponse(w http.ResponseWriter, user *models.User, code int) {
-	var response models.SignUpResponse
+	var response models.AuthResponse
 	response.Token = logic.GetJwtToken()
 	response.User.BaseModel.ID = user.ID
 	response.User.BaseModel.CreatedAt = user.CreatedAt
