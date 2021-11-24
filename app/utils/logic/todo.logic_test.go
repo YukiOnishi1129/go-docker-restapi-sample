@@ -1,7 +1,8 @@
-package logic
+package logic_test
 
 import (
 	"myapp/models"
+	"myapp/utils/logic"
 	"reflect"
 	"testing"
 )
@@ -24,7 +25,7 @@ func TestCreateAllTodoResponseSuccess(t *testing.T) {
 	expectedBaseTodoResponse.Comment = "テスト1"
 	expectedBaseTodoResponseList := [] models.BaseTodoResponse{expectedBaseTodoResponse,expectedBaseTodoResponse}
 
-	tr := NewTodoLogic()
+	tr := logic.NewTodoLogic()
 	// テスト対象の処理を実行
 	actual := tr.CreateAllTodoResponse(&argTodoList)
 
@@ -44,7 +45,7 @@ func TestCreateAllTodoResponseNotEmptySuccess(t *testing.T) {
 	// 予測値 (空配列)
 	expectedBaseTodoResponseList := [] models.BaseTodoResponse{}
 
-	tr := NewTodoLogic()
+	tr := logic.NewTodoLogic()
 	// テスト対象の処理を実行
 	actual := tr.CreateAllTodoResponse(&argTodoList)
 
@@ -70,7 +71,7 @@ func TestCreateTodoResponseSuccess(t *testing.T) {
 	expectedBaseTodoResponse.Title = "テスト1"
 	expectedBaseTodoResponse.Comment = "テスト1"
 
-	tr := NewTodoLogic()
+	tr := logic.NewTodoLogic()
 	// テスト対象の処理を実行
 	actual := tr.CreateTodoResponse(&argTodo)
 
