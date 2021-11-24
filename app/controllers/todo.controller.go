@@ -120,13 +120,3 @@ func (tc *todoController) UpdateTodo(w http.ResponseWriter, r *http.Request) {
     // レスポンス送信処理
     tc.ts.SendCreateTodoResponse(w, &responseTodo)
 }
-
-
-// func SetTodoRouting(router *mux.Router) {
-// 	router.Handle("/api/v1/todo", logic.JwtMiddleware.Handler(http.HandlerFunc(fetchAllTodos))).Methods("GET")
-//     router.Handle("/api/v1/todo/{id}", logic.JwtMiddleware.Handler(http.HandlerFunc(fetchTodoById))).Methods("GET")
-
-//     router.Handle("/api/v1/todo", logic.JwtMiddleware.Handler(http.HandlerFunc(createTodo))).Methods("POST")
-//     router.Handle("/api/v1/todo/{id}", logic.JwtMiddleware.Handler(http.HandlerFunc(deleteTodo))).Methods("DELETE")
-//     router.Handle("/api/v1/todo/{id}", logic.JwtMiddleware.Handler(http.HandlerFunc(updateTodo))).Methods("PUT")
-// }

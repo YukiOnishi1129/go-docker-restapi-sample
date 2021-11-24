@@ -32,8 +32,6 @@ func Init() *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	// グローバル変数に代入する必要あり
-	DB = db
 
 	return db
 }
@@ -41,15 +39,15 @@ func Init() *gorm.DB {
 /*
 * DBの接続情報を取得
 */
-func GetDB() *gorm.DB {
-	return DB
-}
+// func GetDB() *gorm.DB {
+// 	return DB
+// }
 
 /*
 * DBを閉じる
 */
-func CloseDB() {
-	sqlDB, _ := DB.DB()
+func CloseDB(db *gorm.DB) {
+	sqlDB, _ := db.DB()
 	if err = sqlDB.Close(); err != nil {
 		panic(err)
 	}

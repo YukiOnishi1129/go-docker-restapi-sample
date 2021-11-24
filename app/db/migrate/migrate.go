@@ -13,10 +13,9 @@ func migrate(dbCon *gorm.DB) {
 }
 
 func main() {
-	db.Init()
-	dbCon := db.GetDB()
+	dbCon := db.Init()
 	// dBを閉じる
-	defer db.CloseDB()
+	defer db.CloseDB(dbCon)
 
 	// migration実行
 	migrate(dbCon)

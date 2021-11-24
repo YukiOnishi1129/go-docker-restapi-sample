@@ -45,11 +45,3 @@ func (ac *authController) SignUp(w http.ResponseWriter, r *http.Request) {
 	// 会員登録APIのレスポンス送信
 	ac.as.SendAuthResponse(w, &createUser, http.StatusCreated)
 }
-
-/*
- auth controllerのルーティング設定
-*/
-// func SetAuthRouting(router *mux.Router) {
-// 	router.HandleFunc("/api/v1/signin", singIn).Methods("POST")
-// 	router.HandleFunc("/api/v1/signup", signUp).Methods("POST")
-// }
