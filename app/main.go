@@ -44,13 +44,4 @@ func main() {
 
 	// API起動
 	mainRouter.StartWebServer()
-
-	// server := http.Server{
-	// 	Addr: ":4000",
-	// }
-
-	// server.ListenAndServe()
-
-	// API起動
-	// router.StartWebServer()
 }
