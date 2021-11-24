@@ -12,12 +12,20 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var JwtToken string
+type JWTLogic interface {
+	CreateJwtToken(user *models.User) (string, error)
+}
+
+type jwtLogic struct {}
+
+func NewJWTLogic() JWTLogic {
+	return &jwtLogic{}
+}
 
 /*
  jwtトークンの新規作成
 */
-func CreateJwtToken(user *models.User) (string, error) {
+func (jl *jwtLogic) CreateJwtToken(user *models.User) (string, error) {
 	// headerのセット
 	token := jwt.New(jwt.SigningMethodHS256)
 	// claimsのセット

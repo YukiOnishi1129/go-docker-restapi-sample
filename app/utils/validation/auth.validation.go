@@ -7,10 +7,21 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
+type AuthValidation interface {
+	SignInValidate(signInRequest models.SignInRequest) error
+	SignUpValidate(signUpRequest models.SignUpRequest) error
+}
+
+type authValidation struct {}
+
+func NewAuthValidation() AuthValidation {
+	return &authValidation{}
+}
+
 /*
  ログインパラメータのバリデーション
 */
-func SignInValidate(signInRequest models.SignInRequest) error {
+func (av *authValidation) SignInValidate(signInRequest models.SignInRequest) error {
 	return validation.ValidateStruct(&signInRequest,
 		validation.Field(
 			&signInRequest.Email,
@@ -31,7 +42,7 @@ func SignInValidate(signInRequest models.SignInRequest) error {
 /*
  会員登録パラメータのバリデーション
 */
-func SignUpValidate(signUpRequest models.SignUpRequest) error {
+func (av *authValidation) SignUpValidate(signUpRequest models.SignUpRequest) error {
 	return validation.ValidateStruct(&signUpRequest,
 		validation.Field(
 			&signUpRequest.Name,

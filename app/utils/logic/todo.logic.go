@@ -2,10 +2,21 @@ package logic
 
 import "myapp/models"
 
+type TodoLogic interface {
+	CreateAllTodoResponse(todos *[]models.Todo) []models.BaseTodoResponse
+	CreateTodoResponse(todo *models.Todo) models.BaseTodoResponse
+}
+
+type todoLogic struct {}
+
+func NewTodoLogic() TodoLogic {
+	return &todoLogic{}
+}
+
 /*
  レスポンス用のTodoリストの構造体を作成
 */
-func CreateAllTodoResponse(todos *[]models.Todo) []models.BaseTodoResponse {
+func (tl *todoLogic) CreateAllTodoResponse(todos *[]models.Todo) []models.BaseTodoResponse {
 	var responseTodos []models.BaseTodoResponse
 	for _, todo := range *todos {
 		var newTodo models.BaseTodoResponse
@@ -24,7 +35,7 @@ func CreateAllTodoResponse(todos *[]models.Todo) []models.BaseTodoResponse {
 /*
  レスポンス用のTodoの構造体を作成
 */
-func CreateTodoResponse(todo *models.Todo) models.BaseTodoResponse {
+func (tl *todoLogic) CreateTodoResponse(todo *models.Todo) models.BaseTodoResponse {
 	var responseTodo models.BaseTodoResponse
 	responseTodo.BaseModel.ID = todo.BaseModel.ID
 	responseTodo.BaseModel.CreatedAt = todo.BaseModel.CreatedAt

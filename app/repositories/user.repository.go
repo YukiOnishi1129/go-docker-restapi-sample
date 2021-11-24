@@ -1,16 +1,31 @@
 package repositories
 
 import (
-	"myapp/db"
 	"myapp/models"
+
+	"gorm.io/gorm"
 )
+
+type UserRepository interface {
+	GetUserByEmail(user *models.User, email string) error
+	GetAllUserByEmail(users *[]models.User, email string) error
+	CreateUser(createUsers *models.User) error
+}
+
+type userRepository struct {
+	db *gorm.DB
+}
+
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db}
+}
 
 /*
  emailに紐づくユーザーリストを取得
 */
-func GetUserByEmail(user *models.User, email string) error {
-	db := db.GetDB()
-	if err := db.Where("email=?", email).First(&user).Error; err != nil {
+func (ur *userRepository) GetUserByEmail(user *models.User, email string) error {
+	// db := db.GetDB()
+	if err := ur.db.Where("email=?", email).First(&user).Error; err != nil {
 		return err
 	}
 
@@ -20,9 +35,9 @@ func GetUserByEmail(user *models.User, email string) error {
 /*
  emailに紐づくユーザーリストを取得
 */
-func GetAllUserByEmail(users *[]models.User, email string) error {
-	db := db.GetDB()
-	if err := db.Where("email=?", email).Find(&users).Error; err != nil {
+func (ur *userRepository) GetAllUserByEmail(users *[]models.User, email string) error {
+	// db := db.GetDB()
+	if err := ur.db.Where("email=?", email).Find(&users).Error; err != nil {
 		return err
 	}
 
@@ -32,9 +47,9 @@ func GetAllUserByEmail(users *[]models.User, email string) error {
 /*
   ユーザーデータ新規登録
 */
-func CreateUser(createUsers *models.User) error {
-	db := db.GetDB()
-	if err := db.Create(&createUsers).Error; err != nil {
+func (ur *userRepository) CreateUser(createUsers *models.User) error {
+	// db := db.GetDB()
+	if err := ur.db.Create(&createUsers).Error; err != nil {
 		return err
 	}
 

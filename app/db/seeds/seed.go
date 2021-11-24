@@ -51,10 +51,9 @@ func todoSeeds(db *gorm.DB) error {
 
 
 func main() {
-	db.Init()
-	dbCon := db.GetDB()
+	dbCon := db.Init()
 	// dBを閉じる
-	defer db.CloseDB()
+	defer db.CloseDB(dbCon)
 
 	if err := userSeeds(dbCon); err != nil {
 		fmt.Printf("%+v", err)
