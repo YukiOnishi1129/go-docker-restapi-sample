@@ -3,6 +3,7 @@ package repositories
 import (
 	"myapp/models"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -82,10 +83,10 @@ func (tr *todoRepository) DeleteTodo(id string, userId int) error {
 	// 	return tr.db.Error
 	// } else 
 	
-	// if tr.db.RowsAffected < 1 {
-	// 	return nil
-	// 	// return errors.Errorf("id=%w のTodoデータが存在しません。", id)
-	// }
+	if tr.db.RowsAffected < 1 {
+		// return nil
+		return errors.Errorf("id=%w のTodoデータが存在しません。", id)
+	}
 
 	return nil
 }
