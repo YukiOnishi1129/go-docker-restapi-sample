@@ -17,12 +17,12 @@ var (
 /*
 * DBの接続設定を実施
 */
-func Init() {
+func Init() *gorm.DB {
 	// .envを読み込む
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil
 	}
 	// MySQLへの接続情報を定義
 	dsn := os.Getenv(("MYSQL_USER")) +":"+os.Getenv(("MYSQL_PASSWORD")) +"@tcp("+ os.Getenv(("MYSQL_HOST")) +":" +os.Getenv(("MYSQL_PORT"))+ ")/"+ os.Getenv(("MYSQL_DATABASE")) +"?charset=utf8mb4&parseTime=True&loc=Local"
@@ -34,6 +34,8 @@ func Init() {
 	}
 	// グローバル変数に代入する必要あり
 	DB = db
+
+	return db
 }
 
 /*

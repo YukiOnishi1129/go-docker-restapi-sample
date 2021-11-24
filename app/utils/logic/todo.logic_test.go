@@ -24,8 +24,9 @@ func TestCreateAllTodoResponseSuccess(t *testing.T) {
 	expectedBaseTodoResponse.Comment = "テスト1"
 	expectedBaseTodoResponseList := [] models.BaseTodoResponse{expectedBaseTodoResponse,expectedBaseTodoResponse}
 
+	tr := NewTodoLogic()
 	// テスト対象の処理を実行
-	actual := CreateAllTodoResponse(&argTodoList)
+	actual := tr.CreateAllTodoResponse(&argTodoList)
 
 	// テスト実行
 	if !reflect.DeepEqual(actual, expectedBaseTodoResponseList) {
@@ -43,8 +44,9 @@ func TestCreateAllTodoResponseNotEmptySuccess(t *testing.T) {
 	// 予測値 (空配列)
 	expectedBaseTodoResponseList := [] models.BaseTodoResponse{}
 
+	tr := NewTodoLogic()
 	// テスト対象の処理を実行
-	actual := CreateAllTodoResponse(&argTodoList)
+	actual := tr.CreateAllTodoResponse(&argTodoList)
 
 	// テスト実行
 	if len(actual) != len(expectedBaseTodoResponseList) {
@@ -68,8 +70,9 @@ func TestCreateTodoResponseSuccess(t *testing.T) {
 	expectedBaseTodoResponse.Title = "テスト1"
 	expectedBaseTodoResponse.Comment = "テスト1"
 
+	tr := NewTodoLogic()
 	// テスト対象の処理を実行
-	actual := CreateTodoResponse(&argTodo)
+	actual := tr.CreateTodoResponse(&argTodo)
 
 	// テスト実行
 	if !reflect.DeepEqual(actual, expectedBaseTodoResponse) {

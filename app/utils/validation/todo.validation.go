@@ -6,10 +6,20 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+type TodoValidation interface {
+	MutationTodoValidate(mutationTodoRequest models.MutationTodoRequest) error
+}
+
+type todoValidation struct {}
+
+func NewTodoValidation() TodoValidation {
+	return &todoValidation{}
+}
+
 /*
  Todo新規登録、更新時のリクエストパラメータのバリデーション
 */
-func MutationTodoValidate(mutationTodoRequest models.MutationTodoRequest) error {
+func (tv *todoValidation) MutationTodoValidate(mutationTodoRequest models.MutationTodoRequest) error {
 	return validation.ValidateStruct(&mutationTodoRequest,
 		validation.Field(
 			&mutationTodoRequest.Title,

@@ -7,10 +7,21 @@ import (
 	jwt "github.com/form3tech-oss/jwt-go"
 )
 
+type AuthLogic interface {
+	GetUserIdFromContext(r *http.Request) (int, error)
+}
+
+type authLogic struct {
+}
+
+func NewAuthLogic() AuthLogic {
+	return &authLogic{}
+}
+
 /*
  トークン情報よりuserIdを取得
 */
-func GetUserIdFromContext(r *http.Request) (int, error) {
+func (al *authLogic) GetUserIdFromContext(r *http.Request) (int, error) {
 	// トークンからuserIdを取得
 	user := r.Context().Value("user")
     claims := user.(*jwt.Token).Claims.(jwt.MapClaims)
