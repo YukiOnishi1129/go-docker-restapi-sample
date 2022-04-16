@@ -37,6 +37,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./mysql/db:/docker-entrypoint-initdb.d  #初期データ
     ports:
       - ${MYSQL_PORT}:3306
 
