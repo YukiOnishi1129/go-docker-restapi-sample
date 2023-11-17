@@ -12,15 +12,13 @@ type AuthValidation interface {
 	SignUpValidate(signUpRequest models.SignUpRequest) error
 }
 
-type authValidation struct {}
+type authValidation struct{}
 
 func NewAuthValidation() AuthValidation {
 	return &authValidation{}
 }
 
-/*
- ログインパラメータのバリデーション
-*/
+// SignInValidate ログインパラメータのバリデーション
 func (av *authValidation) SignInValidate(signInRequest models.SignInRequest) error {
 	return validation.ValidateStruct(&signInRequest,
 		validation.Field(
@@ -38,10 +36,7 @@ func (av *authValidation) SignInValidate(signInRequest models.SignInRequest) err
 	)
 }
 
-
-/*
- 会員登録パラメータのバリデーション
-*/
+// SignUpValidate 会員登録パラメータのバリデーション
 func (av *authValidation) SignUpValidate(signUpRequest models.SignUpRequest) error {
 	return validation.ValidateStruct(&signUpRequest,
 		validation.Field(

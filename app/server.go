@@ -12,38 +12,38 @@ import (
 )
 
 func main() {
-	// DB接続
+	// DB connection
 	dbCon := db.Init()
 
-	// logic層
+	// logic layer
 	authLogic := logic.NewAuthLogic()
 	userLogic := logic.NewUserLogic()
 	todoLogic := logic.NewTodoLogic()
 	responseLogic := logic.NewResponseLogic()
 	jwtLogic := logic.NewJWTLogic()
 
-	// validation層
+	// validation
 	authValidate := validation.NewAuthValidation()
 	todoValidate := validation.NewTodoValidation()
 
-	// repository層
+	// repository layer
 	userRepo := repositories.NewUserRepository(dbCon)
 	todoRepo := repositories.NewTodoRepository(dbCon)
-	// service層
+	// service layer
 	authService := services.NewAuthService(userRepo, authLogic, userLogic, responseLogic, jwtLogic, authValidate)
 	todoService := services.NewTodoService(todoRepo, todoLogic, responseLogic, todoValidate)
-	// controller層
+	// controller layer
 	appController := controllers.NewAppController()
 	authController := controllers.NewAuthController(authService)
 	todoController := controllers.NewTodoController(todoService, authService)
 
-	// router設定
+	// router configuration
 	appRouter := router.NewAppRouter(appController)
 	authRouter := router.NewAuthRouter(authController)
 	todoRouter := router.NewTodoRouter(todoController)
 	mainRouter := router.NewMainRouter(appRouter, authRouter, todoRouter)
 
-	// API起動
+	// API startup
 	if err := mainRouter.StartWebServer(); err != nil {
 		log.Printf("error start web server")
 	}

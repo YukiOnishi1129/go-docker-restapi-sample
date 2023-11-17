@@ -16,15 +16,13 @@ type JWTLogic interface {
 	CreateJwtToken(user *models.User) (string, error)
 }
 
-type jwtLogic struct {}
+type jwtLogic struct{}
 
 func NewJWTLogic() JWTLogic {
 	return &jwtLogic{}
 }
 
-/*
- jwtトークンの新規作成
-*/
+// CreateJwtToken jwtトークンの新規作成
 func (jl *jwtLogic) CreateJwtToken(user *models.User) (string, error) {
 	// headerのセット
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -54,9 +52,7 @@ func (jl *jwtLogic) CreateJwtToken(user *models.User) (string, error) {
 	return tokenString, nil
 }
 
-/*
- jwt認証のミドルウェア
-*/
+// JwtMiddleware jwt認証のミドルウェア
 var JwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_KEY")), nil

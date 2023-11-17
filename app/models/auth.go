@@ -1,29 +1,25 @@
 package models
 
-/*
- ログインパラメータ
-*/
+// SignInRequest ログインパラメータ
 type SignInRequest struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-/*
- 会員登録パラメータ
-*/
+// SignUpRequest 会員登録パラメータ
 type SignUpRequest struct {
-	Name string `json:"name"`
-	Email string `json:"email"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type UserResponse struct {
 	BaseModel
-	Name   string `gorm:"size:255" json:"name,omitempty"`
-	Email  string `gorm:"size:255;not null;unique" json:"email,omitempty"`
+	Name  string `gorm:"size:255" json:"name,omitempty"`
+	Email string `gorm:"size:255;not null;unique" json:"email,omitempty"`
 }
 
 type AuthResponse struct {
-	Token string `json:"token"`
-	User UserResponse `json:"user"`
+	Token string       `json:"token"`
+	User  UserResponse `json:"user"`
 }

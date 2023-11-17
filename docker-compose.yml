@@ -8,11 +8,9 @@ services:
     tty: true
     depends_on:
       - db
-    volumes: # ローカルとコンテナのパスをマウント
+    volumes:
       - ./app:/app
       - /etc/localtime:/etc/localtime:ro # タイムゾーンを日本時刻に設定
-#    working_dir: /app
-    # command: sh -c 'yarn && yarn start:dev '
     ports:
       - ${BACKEND_PORT}:${BACKEND_CONTAINER_PORT}
     security_opt:
@@ -39,7 +37,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./mysql/db:/docker-entrypoint-initdb.d  #初期データ
+      - ./mysql/db:/docker-entrypoint-initdb.d  #initial data
     ports:
       - ${MYSQL_PORT}:3306
 

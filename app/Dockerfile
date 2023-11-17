@@ -1,9 +1,8 @@
 FROM golang:1.21.4-alpine3.18
 
-#ENV CGO_ENABLED 0
 
 RUN mkdir /app
-# ワーキングディレクトリの設定
+
 WORKDIR /app
 
 COPY /app /app
