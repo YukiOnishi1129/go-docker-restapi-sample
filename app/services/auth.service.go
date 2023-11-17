@@ -2,7 +2,7 @@ package services
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"myapp/models"
 	"myapp/repositories"
@@ -34,9 +34,7 @@ func NewAuthService(ur repositories.UserRepository, al logic.AuthLogic, ul logic
 	return &authService{ur, al, ul, rl, jl, av}
 }
 
-/*
- tokenよりuserIdを取得
-*/
+// GetUserIdFromToken tokenよりuserIdを取得
 func (as *authService) GetUserIdFromToken(w http.ResponseWriter, r *http.Request) (int, error) {
 	// トークンからuserIdを取得
 	userId, err := as.al.GetUserIdFromContext(r)
@@ -49,18 +47,15 @@ func (as *authService) GetUserIdFromToken(w http.ResponseWriter, r *http.Request
 	return userId, nil
 }
 
-/*
- ログイン処理
-*/
+// SignIn ログイン処理
 func (as *authService) SignIn(w http.ResponseWriter, r *http.Request) (models.User, error) {
 	// RequestのBodyデータを取得
-	reqBody, _ := ioutil.ReadAll(r.Body)
+	reqBody, _ := io.ReadAll(r.Body)
 	var signInRequestParam models.SignInRequest
 	// Unmarshal: jsonを構造体に変換
 	if err := json.Unmarshal(reqBody, &signInRequestParam); err != nil {
 		log.Fatal(err)
-		errMessage := "リクエストパラメータを構造体へ変換処理でエラー発生"
-		as.rl.SendResponse(w, as.rl.CreateErrorStringResponse(errMessage), http.StatusInternalServerError)
+		as.rl.SendResponse(w, as.rl.CreateErrorStringResponse("リクエストパラメータを構造体へ変換処理でエラー発生"), http.StatusInternalServerError)
 		return models.User{}, err
 	}
 
@@ -92,17 +87,14 @@ func (as *authService) SignIn(w http.ResponseWriter, r *http.Request) (models.Us
 	return user, nil
 }
 
-/*
- 会員登録処理
-*/
+// SignUp 会員登録処理
 func (as *authService) SignUp(w http.ResponseWriter, r *http.Request) (models.User, error) {
 	// RequestのBodyデータを取得
-	reqBody, _ := ioutil.ReadAll(r.Body)
+	reqBody, _ := io.ReadAll(r.Body)
 	var signUpRequestParam models.SignUpRequest
 	if err := json.Unmarshal(reqBody, &signUpRequestParam); err != nil {
 		log.Fatal(err)
-		errMessage := "リクエストパラメータを構造体へ変換処理でエラー発生"
-		as.rl.SendResponse(w, as.rl.CreateErrorStringResponse(errMessage), http.StatusInternalServerError)
+		as.rl.SendResponse(w, as.rl.CreateErrorStringResponse("リクエストパラメータを構造体へ変換処理でエラー発生"), http.StatusInternalServerError)
 		return models.User{}, err
 	}
 
@@ -121,7 +113,7 @@ func (as *authService) SignUp(w http.ResponseWriter, r *http.Request) (models.Us
 	}
 
 	if len(users) != 0 {
-		as.rl.SendResponse(w, as.rl.CreateErrorStringResponse("入力されたメールアドレスは既に登録されています。"),http.StatusUnauthorized)
+		as.rl.SendResponse(w, as.rl.CreateErrorStringResponse("入力されたメールアドレスは既に登録されています。"), http.StatusUnauthorized)
 		return models.User{}, errors.Errorf("「%w」 のユーザーは既に登録されています。", signUpRequestParam.Email)
 	}
 
@@ -140,9 +132,7 @@ func (as *authService) SignUp(w http.ResponseWriter, r *http.Request) (models.Us
 	return createUser, nil
 }
 
-/*
- ログインAPI・会員登録APIのレスポンス送信処理
-*/
+// SendAuthResponse ログインAPI・会員登録APIのレスポンス送信処理
 func (as *authService) SendAuthResponse(w http.ResponseWriter, user *models.User, code int) {
 	// jwtトークンを作成
 	token, err := as.jl.CreateJwtToken(user)
