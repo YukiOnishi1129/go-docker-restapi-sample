@@ -73,9 +73,6 @@ docker compose up
 - go のコンテナにアクセス
 
 ```
-docker exec -it 20211105_go_rest_server sh
-
-## makeコマンドはこちら
 make backend-ssh
 ```
 
@@ -85,9 +82,6 @@ make backend-ssh
 - go のコンテナ内で、以下コマンドを実行する
 
 ```
-go run db/migrate/migrate.go
-
-## makeコマンドはこちら
 make db-migrate
 ```
 
@@ -100,9 +94,6 @@ make db-migrate
 - go のコンテナ内で、以下コマンドを実行する
 
 ```
-go run db/seeds/seed.go
-
-## makeコマンドはこちら
 make db-seed
 ```
 
@@ -118,6 +109,34 @@ docker compose restart
 
 - 以下の url に接続し、レスポンスが返ってくる事を確認
   - http://localhost:4000/api/v1
+
+## 開発中のコマンド
+※何もdockerでAPIを起動した状態で実行してください。
+
+### テスト
+```
+make test
+```
+
+### 静的解析
+```
+make lint
+```
+
+### goのライブラリ追加
+```
+go-add-library name="[ライブラリ名]"
+
+// 複数のライブラリを指定する場合は、name="xxx yyy" のように""で囲んで実行すること
+```
+
+### DBのデータをリセットする場合
+gormはロールバック機能がないため、以下のコマンドでDBごと消去する
+```
+docker compose down -v
+```
+
+その後dockerを起動させて再度マイグレーションをしてテーブルを初期化する
 
 ## docker コマンド
 
