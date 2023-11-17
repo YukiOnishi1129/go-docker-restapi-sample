@@ -61,19 +61,22 @@ touch .env
 - ビルド
 
 ```
-docker-compose build
+docker compose build
 ```
 
 - コンテナ起動
 
 ```
-docker-compose up
+docker compose up
 ```
 
 - go のコンテナにアクセス
 
 ```
 docker exec -it 20211105_go_rest_server sh
+
+## makeコマンドはこちら
+make backend-ssh
 ```
 
 ### 3. データ用意
@@ -83,6 +86,9 @@ docker exec -it 20211105_go_rest_server sh
 
 ```
 go run db/migrate/migrate.go
+
+## makeコマンドはこちら
+make db-migrate
 ```
 
 - テーブルが作成されるので、DB(MySQL)に接続し確認する
@@ -95,16 +101,19 @@ go run db/migrate/migrate.go
 
 ```
 go run db/seeds/seed.go
+
+## makeコマンドはこちら
+make db-seed
 ```
 
 - データが作成されるので、DB(MySQL)に接続し確認する
 
 ### 4. API 起動
 
-- go のコンテナ内で以下のコマンドを実行し、API を起動する
+- DBにデータを作成したので、再度dockerをリスタートしてAPIを起動させる (初回のみ)
 
 ```
-go run main.go
+docker compose restart
 ```
 
 - 以下の url に接続し、レスポンスが返ってくる事を確認
