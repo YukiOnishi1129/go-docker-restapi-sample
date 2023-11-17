@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"myapp/controllers"
 	"myapp/db"
 	"myapp/repositories"
@@ -43,5 +44,7 @@ func main() {
 	mainRouter := router.NewMainRouter(appRouter, authRouter, todoRouter)
 
 	// API起動
-	mainRouter.StartWebServer()
+	if err := mainRouter.StartWebServer(); err != nil {
+		log.Printf("error start web server")
+	}
 }
