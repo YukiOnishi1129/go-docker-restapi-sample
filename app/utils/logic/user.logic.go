@@ -13,9 +13,7 @@ func NewUserLogic() UserLogic {
 	return &userLogic{}
 }
 
-/*
- パスワードのハッシュ化
-*/
+// ChangeHashPassword パスワードのハッシュ化
 func (ul *userLogic) ChangeHashPassword(password string) []byte {
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return hashPassword

@@ -1,9 +1,14 @@
-FROM golang:1.17.3-alpine3.14
+FROM golang:1.21.4-alpine3.18
 
-ENV CGO_ENABLED 0
 
 RUN mkdir /app
-# ワーキングディレクトリの設定
+
 WORKDIR /app
 
-COPY . /app
+COPY /app /app
+
+RUN go mod tidy && \
+    go install github.com/cosmtrek/air@v1.46.0 && \
+    go install honnef.co/go/tools/cmd/staticcheck@latest
+
+CMD ["air", "-c", ".air.toml"]

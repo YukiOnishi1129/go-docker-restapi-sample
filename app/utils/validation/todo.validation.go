@@ -10,15 +10,13 @@ type TodoValidation interface {
 	MutationTodoValidate(mutationTodoRequest models.MutationTodoRequest) error
 }
 
-type todoValidation struct {}
+type todoValidation struct{}
 
 func NewTodoValidation() TodoValidation {
 	return &todoValidation{}
 }
 
-/*
- Todo新規登録、更新時のリクエストパラメータのバリデーション
-*/
+// MutationTodoValidate 更新時のリクエストパラメータのバリデーション
 func (tv *todoValidation) MutationTodoValidate(mutationTodoRequest models.MutationTodoRequest) error {
 	return validation.ValidateStruct(&mutationTodoRequest,
 		validation.Field(

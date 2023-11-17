@@ -7,9 +7,7 @@ import (
 	"testing"
 )
 
-/*
- 【正常系】CreateAllTodoResponseが正常に処理されること
-*/
+// TestCreateAllTodoResponseSuccess 正常系】CreateAllTodoResponseが正常に処理されること
 func TestCreateAllTodoResponseSuccess(t *testing.T) {
 	// テスト対象の引数
 	var argTodo models.Todo
@@ -23,7 +21,7 @@ func TestCreateAllTodoResponseSuccess(t *testing.T) {
 	expectedBaseTodoResponse.BaseModel.ID = 1
 	expectedBaseTodoResponse.Title = "テスト1"
 	expectedBaseTodoResponse.Comment = "テスト1"
-	expectedBaseTodoResponseList := [] models.BaseTodoResponse{expectedBaseTodoResponse,expectedBaseTodoResponse}
+	expectedBaseTodoResponseList := []models.BaseTodoResponse{expectedBaseTodoResponse, expectedBaseTodoResponse}
 
 	tr := logic.NewTodoLogic()
 	// テスト対象の処理を実行
@@ -35,15 +33,13 @@ func TestCreateAllTodoResponseSuccess(t *testing.T) {
 	}
 }
 
-/*
- 【正常系】CreateAllTodoResponseに空配列の引数を渡した際に、空配列が返却されること
-*/
+// TestCreateAllTodoResponseNotEmptySuccess 【正常系】CreateAllTodoResponseに空配列の引数を渡した際に、空配列が返却されること
 func TestCreateAllTodoResponseNotEmptySuccess(t *testing.T) {
 	// テスト対象の引数 (空配列)
 	argTodoList := []models.Todo{}
 
 	// 予測値 (空配列)
-	expectedBaseTodoResponseList := [] models.BaseTodoResponse{}
+	expectedBaseTodoResponseList := []models.BaseTodoResponse{}
 
 	tr := logic.NewTodoLogic()
 	// テスト対象の処理を実行
@@ -55,9 +51,7 @@ func TestCreateAllTodoResponseNotEmptySuccess(t *testing.T) {
 	}
 }
 
-/*
- 【正常系】CreateTodoResponseが正常に処理されること
-*/
+// TestCreateTodoResponseSuccess 【正常系】CreateTodoResponseが正常に処理されること
 func TestCreateTodoResponseSuccess(t *testing.T) {
 	// テスト対象の引数
 	var argTodo models.Todo

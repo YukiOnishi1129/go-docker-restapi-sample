@@ -7,15 +7,13 @@ type TodoLogic interface {
 	CreateTodoResponse(todo *models.Todo) models.BaseTodoResponse
 }
 
-type todoLogic struct {}
+type todoLogic struct{}
 
 func NewTodoLogic() TodoLogic {
 	return &todoLogic{}
 }
 
-/*
- レスポンス用のTodoリストの構造体を作成
-*/
+// CreateAllTodoResponse レスポンス用のTodoリストの構造体を作成
 func (tl *todoLogic) CreateAllTodoResponse(todos *[]models.Todo) []models.BaseTodoResponse {
 	var responseTodos []models.BaseTodoResponse
 	for _, todo := range *todos {
@@ -32,9 +30,7 @@ func (tl *todoLogic) CreateAllTodoResponse(todos *[]models.Todo) []models.BaseTo
 	return responseTodos
 }
 
-/*
- レスポンス用のTodoの構造体を作成
-*/
+// CreateTodoResponse レスポンス用のTodoの構造体を作成
 func (tl *todoLogic) CreateTodoResponse(todo *models.Todo) models.BaseTodoResponse {
 	var responseTodo models.BaseTodoResponse
 	responseTodo.BaseModel.ID = todo.BaseModel.ID

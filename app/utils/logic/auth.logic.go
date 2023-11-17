@@ -20,14 +20,12 @@ func NewAuthLogic() AuthLogic {
 	return &authLogic{}
 }
 
-/*
- トークン情報よりuserIdを取得
-*/
+// GetUserIdFromContext トークン情報よりuserIdを取得
 func (al *authLogic) GetUserIdFromContext(r *http.Request) (int, error) {
 	// トークンからuserIdを取得
 	// 昔のやり方
 	// user := r.Context().Value("user")
-    // claims := user.(*jwt.Token).Claims.(jwt.MapClaims)
+	// claims := user.(*jwt.Token).Claims.(jwt.MapClaims)
 	// userId, ok := claims["id"].(float64)
 
 	// https://ichi.pro/golang-de-no-jwt-no-jissen-154586293449920
@@ -35,7 +33,7 @@ func (al *authLogic) GetUserIdFromContext(r *http.Request) (int, error) {
 
 	clientToken := r.Header.Get("Authorization")
 	if clientToken == "" {
-		return 0, errors.New("not token") 
+		return 0, errors.New("not token")
 	}
 
 	extractToken := strings.Split(clientToken, "Bearer ")
@@ -46,11 +44,11 @@ func (al *authLogic) GetUserIdFromContext(r *http.Request) (int, error) {
 	}
 
 	token, err := jwt.Parse(extractToken[1], func(token *jwt.Token) (interface{}, error) {
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-            return nil, errors.Errorf("トークンをjwtにparseできません。")
-        }
-        return []byte(secretKey), nil
-    })
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.Errorf("トークンをjwtにparseできません。")
+		}
+		return []byte(secretKey), nil
+	})
 	if err != nil {
 		return 0, err
 	}
@@ -62,8 +60,8 @@ func (al *authLogic) GetUserIdFromContext(r *http.Request) (int, error) {
 
 	userId, ok := claims["id"].(float64)
 	if !ok {
-        return 0, errors.New("id type not match")
-    }
+		return 0, errors.New("id type not match")
+	}
 
 	return int(userId), nil
 }

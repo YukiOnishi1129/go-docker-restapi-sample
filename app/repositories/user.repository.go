@@ -20,9 +20,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db}
 }
 
-/*
- emailに紐づくユーザーリストを取得
-*/
+// GetUserByEmail emailに紐づくユーザーリストを取得
 func (ur *userRepository) GetUserByEmail(user *models.User, email string) error {
 	// db := db.GetDB()
 	if err := ur.db.Where("email=?", email).First(&user).Error; err != nil {
@@ -32,9 +30,7 @@ func (ur *userRepository) GetUserByEmail(user *models.User, email string) error 
 	return nil
 }
 
-/*
- emailに紐づくユーザーリストを取得
-*/
+// GetAllUserByEmail emailに紐づくユーザーリストを取得
 func (ur *userRepository) GetAllUserByEmail(users *[]models.User, email string) error {
 	// db := db.GetDB()
 	if err := ur.db.Where("email=?", email).Find(&users).Error; err != nil {
@@ -44,9 +40,7 @@ func (ur *userRepository) GetAllUserByEmail(users *[]models.User, email string) 
 	return nil
 }
 
-/*
-  ユーザーデータ新規登録
-*/
+// CreateUser ユーザーデータ新規登録
 func (ur *userRepository) CreateUser(createUsers *models.User) error {
 	// db := db.GetDB()
 	if err := ur.db.Create(&createUsers).Error; err != nil {

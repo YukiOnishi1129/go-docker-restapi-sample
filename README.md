@@ -61,19 +61,19 @@ touch .env
 - ビルド
 
 ```
-docker-compose build
+docker compose build
 ```
 
 - コンテナ起動
 
 ```
-docker-compose up
+docker compose up
 ```
 
 - go のコンテナにアクセス
 
 ```
-docker exec -it 20211105_go_rest_server sh
+make backend-ssh
 ```
 
 ### 3. データ用意
@@ -82,7 +82,7 @@ docker exec -it 20211105_go_rest_server sh
 - go のコンテナ内で、以下コマンドを実行する
 
 ```
-go run db/migrate/migrate.go
+make db-migrate
 ```
 
 - テーブルが作成されるので、DB(MySQL)に接続し確認する
@@ -94,21 +94,49 @@ go run db/migrate/migrate.go
 - go のコンテナ内で、以下コマンドを実行する
 
 ```
-go run db/seeds/seed.go
+make db-seed
 ```
 
 - データが作成されるので、DB(MySQL)に接続し確認する
 
 ### 4. API 起動
 
-- go のコンテナ内で以下のコマンドを実行し、API を起動する
+- DBにデータを作成したので、再度dockerをリスタートしてAPIを起動させる (初回のみ)
 
 ```
-go run main.go
+docker compose restart
 ```
 
 - 以下の url に接続し、レスポンスが返ってくる事を確認
   - http://localhost:4000/api/v1
+
+## 開発中のコマンド
+※何もdockerでAPIを起動した状態で実行してください。
+
+### テスト
+```
+make test
+```
+
+### 静的解析
+```
+make lint
+```
+
+### goのライブラリ追加
+```
+go-add-library name="[ライブラリ名]"
+
+// 複数のライブラリを指定する場合は、name="xxx yyy" のように""で囲んで実行すること
+```
+
+### DBのデータをリセットする場合
+gormはロールバック機能がないため、以下のコマンドでDBごと消去する
+```
+docker compose down -v
+```
+
+その後dockerを起動させて再度マイグレーションをしてテーブルを初期化する
 
 ## docker コマンド
 

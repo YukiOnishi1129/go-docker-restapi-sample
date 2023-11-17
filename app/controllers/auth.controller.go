@@ -18,12 +18,10 @@ func NewAuthController(as services.AuthService) AuthController {
 	return &authController{as}
 }
 
-/*
- ログイン処理
-*/
+// SingIn ログイン
 func (ac *authController) SingIn(w http.ResponseWriter, r *http.Request) {
 	// ログイン処理
-	user, err := ac.as.SignIn(w, r);
+	user, err := ac.as.SignIn(w, r)
 	if err != nil {
 		return
 	}
@@ -32,12 +30,10 @@ func (ac *authController) SingIn(w http.ResponseWriter, r *http.Request) {
 	ac.as.SendAuthResponse(w, &user, http.StatusOK)
 }
 
-/*
- 会員登録処理
-*/
+// SignUp 会員登録処理
 func (ac *authController) SignUp(w http.ResponseWriter, r *http.Request) {
 	// ログイン処理
-	createUser, err := ac.as.SignUp(w, r);
+	createUser, err := ac.as.SignUp(w, r)
 	if err != nil {
 		return
 	}

@@ -7,15 +7,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// var Router *mux.Router
-
 type MainRouter interface {
 	setupRouting() *mux.Router
 	StartWebServer() error
 }
 
 type mainRouter struct {
-	appR AppRouter
+	appR  AppRouter
 	authR AuthRouter
 	todoR TodoRouter
 }
@@ -24,9 +22,9 @@ func NewMainRouter(appR AppRouter, authR AuthRouter, todoR TodoRouter) MainRoute
 	return &mainRouter{appR, authR, todoR}
 }
 
-/*
- ルーティング定義
-*/
+const PORT = 4000
+
+// routing definition
 func (mainRouter *mainRouter) setupRouting() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -37,14 +35,11 @@ func (mainRouter *mainRouter) setupRouting() *mux.Router {
 	return router
 }
 
-/*
- サーバー起動
-*/
+// StartWebServer server startup
 func (mainRouter *mainRouter) StartWebServer() error {
 	fmt.Println("Rest API with Mux Routers")
 	// // ルーティング設定
 	// setupRouting()
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", 3000), mainRouter.setupRouting())
+	return http.ListenAndServe(fmt.Sprintf(":%d", PORT), mainRouter.setupRouting())
 }
-
