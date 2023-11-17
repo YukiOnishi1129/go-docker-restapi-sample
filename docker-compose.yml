@@ -1,18 +1,20 @@
-version: "3.8"
+version: "3.9"
 services:
   server:
     container_name: ${BACKEND_CONTAINER_NAME}
-    build: ./app
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
     tty: true
     depends_on:
       - db
     volumes: # ローカルとコンテナのパスをマウント
       - ./app:/app
       - /etc/localtime:/etc/localtime:ro # タイムゾーンを日本時刻に設定
-    working_dir: /app
+#    working_dir: /app
     # command: sh -c 'yarn && yarn start:dev '
     ports:
-      - ${BACKEND_PORT}:3000
+      - ${BACKEND_PORT}:${BACKEND_CONTAINER_PORT}
     security_opt:
       - seccomp:unconfined
     environment:
