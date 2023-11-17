@@ -114,7 +114,7 @@ func (as *authService) SignUp(w http.ResponseWriter, r *http.Request) (models.Us
 
 	if len(users) != 0 {
 		as.rl.SendResponse(w, as.rl.CreateErrorStringResponse("入力されたメールアドレスは既に登録されています。"), http.StatusUnauthorized)
-		return models.User{}, errors.Errorf("「%w」 のユーザーは既に登録されています。", signUpRequestParam.Email)
+		return models.User{}, errors.Errorf("「%s」 のユーザーは既に登録されています。", signUpRequestParam.Email)
 	}
 
 	var createUser models.User

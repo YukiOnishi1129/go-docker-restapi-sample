@@ -75,7 +75,7 @@ func (tr *todoRepository) DeleteTodo(id string, userId int) error {
 
 	if tr.db.RowsAffected < 1 {
 		// return nil
-		return errors.Errorf("id=%w のTodoデータが存在しません。", id)
+		return errors.Errorf("id=%s のTodoデータが存在しません。", id)
 	}
 
 	return nil
