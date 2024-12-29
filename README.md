@@ -1,8 +1,8 @@
 # go-docker-restapi-sample
 
-golang docker REST API のサンプル
+golang docker REST API sample
 
-## 技術構成
+## Technical configuration
 
 - go
 - gorm
@@ -14,152 +14,152 @@ golang docker REST API のサンプル
 
 ## API
 
-### トップ
+### Top
 
-|                                          | メソッド | URI     | 権限 |
+|                                          | Method | URI     | Authority |
 | :--------------------------------------- | :------- | :------ | :--- |
-| 文字列を返すだけの確認用のエンドポイント | GET      | /api/v1 | なし |
+| Confirming endpoint that only returns a strings  | GET      | /api/v1 | - |
 
-### ユーザー認証
+### Authentication
 
-|                                          | メソッド | URI     | 権限 |
+|                                          | Method | URI     | Authority |
 | :--------------------------------------- | :------- | :------ | :--- |
-| ログイン | POST      | /api/v1/signin | なし |
-| 会員登録 | POST      | /api/v1/signup | なし |
+| Signin | POST      | /api/v1/signin | - |
+| Signup | POST      | /api/v1/signup | - |
 
 ### Todo
 
-|                                          | メソッド | URI     | 権限 |
+|                                          | Method | URI     | Authority |
 | :--------------------------------------- | :------- | :------ | :--- |
-| ユーザーに紐づく全Todoデータを取得 | GET      | /api/v1/todo | 認証済 |
-| TodoのIDに紐づく単一のTodoデータを取得  | GET      | /api/v1/todo/:id | 認証済 |
-| Todo新規作成  | POST      | /api/v1/todo | 認証済 |
-| Todo更新  | PUT      | /api/v1/todo/:id | 認証済 |
-| Todo削除  | DELETE      | /api/v1/todo/:id | 認証済 |
+| Getting all todo list associated with user| GET      | /api/v1/todo | Verified |
+| Getting a single Todo associated with Todo id  | GET      | /api/v1/todo/:id | Verified |
+| Creating a Todo | POST      | /api/v1/todo | Verified |
+| Updating a Todo | PUT      | /api/v1/todo/:id | Verified |
+| Deleting a Todo | DELETE      | /api/v1/todo/:id | Verified |
 
-## 環境構築
+## Setting environment
 
-### 1. env ファイルを作成
+### 1. Create an env file
 
-- ルートディレクトリ直下に「.env」ファイルを作成
-- 「.env.sample」の記述をコピー
+- Create ".env" file directly under the root directory
+- Copy the description of ".env.sample"
 
 ```
 touch .env
 ```
 
-- app ディレクトリに移動し、「.env」ファイルを作成
-- 「app/.env.sample」ファイルの記述をコピー
+- Go to the app directory and create a ".env" file
+- Coty the description of "app/.env.sample"
 
 ```
 cd app
 touch .env
 ```
 
-### 2. docker 起動
+### 2. Startup docker
 
-- ビルド
+- Build
 
 ```
 docker compose build
 ```
 
-- コンテナ起動
+- Startup container
 
 ```
 docker compose up
 ```
 
-- go のコンテナにアクセス
+- Access go container
 
 ```
 make backend-ssh
 ```
 
-### 3. データ用意
+### 3. Preparing data
 
-- マイグレーションを実行
-- go のコンテナ内で、以下コマンドを実行する
+- Perform migration
+- In the go container, execute the following commands.
 
 ```
 make db-migrate
 ```
 
-- テーブルが作成されるので、DB(MySQL)に接続し確認する
+- A table will be created, so connect to the DB(MySQL) and check it.
 
-  - 接続アプリは「Sequel Ace」がおすすめ
+  - "Sequel Ace" is the recommended connection application
   - https://qiita.com/ucan-lab/items/b1304eee2157dbef7774
 
-- シーディングを実行
-- go のコンテナ内で、以下コマンドを実行する
+- Perform seeding
+- In the go container, execute the following commands.
 
 ```
 make db-seed
 ```
 
-- データが作成されるので、DB(MySQL)に接続し確認する
+- Data is created, so connect to the DB(MySQL) and check it.
 
-### 4. API 起動
+### 4. Startup API
 
-- DBにデータを作成したので、再度dockerをリスタートしてAPIを起動させる (初回のみ)
+- Now that the data has been created in the DB, restart docker again to launch the API(first time only)
 
 ```
 docker compose restart
 ```
 
-- 以下の url に接続し、レスポンスが返ってくる事を確認
+- Connct to the following url and confirm that a response is returned
   - http://localhost:4000/api/v1
 
-## 開発中のコマンド
-※何もdockerでAPIを起動した状態で実行してください。
+## Commands during development
+※Nothing should be run with the API started in docker.
 
-### テスト
+### Test
 ```
 make test
 ```
 
-### 静的解析
+### Static analysis
 ```
 make lint
 ```
 
-### goのライブラリ追加
+### Add go library
 ```
-go-add-library name="[ライブラリ名]"
+go-add-library name="[library name]"
 
-// 複数のライブラリを指定する場合は、name="xxx yyy" のように""で囲んで実行すること
+// When specifying multiple libraries, enclose them in "", such as name="xxx yyy"
 ```
 
-### DBのデータをリセットする場合
-gormはロールバック機能がないため、以下のコマンドでDBごと消去する
+### To reset DB data
+Since gorm does not have a rollback function, erase the entire DB with the following command
 ```
 docker compose down -v
 ```
 
-その後dockerを起動させて再度マイグレーションをしてテーブルを初期化する
+Then start docker and do the migration again to initialize the table
 
-## docker コマンド
+## docker commands
 
 ```
-// ビルド
+// build
 docker-compose build
 
-// コンテナ起動
+// start container
 docker-compose up
 
-// コンテナ起動(バックグラウンド実行)
+// start container (background execution)
 docker-compose up -d
 
-// コンテナ停止
+// stop container
 docker-compose down
 
-// コンテナ停止&ボリューム削除(DBデータを削除)
+// Stop container and delete volume (delete DB data)
 docker-compose down -v
 
-// appコンテナへログイン
+// Login to app container
 docker exec -it 20211105_go_rest_server sh
 
-// dbコンテナへログイン
+// Login to DB container
 docker exec -it 20211105_go_rest_db /bin/bash
 
 ```
